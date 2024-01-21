@@ -51,12 +51,6 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         return board[position.getRow()-1][position.getColumn()-1];
-//        for (var piece : gamePieces){
-//            if (piece.position == position){
-//                return piece;
-//            }
-//        }
-//        return null;
     }
 
     /**

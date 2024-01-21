@@ -74,12 +74,12 @@ public class ChessPiece {
 //        if(type == PieceType.QUEEN){
 //            return pieceMoves();
 //        }
-//        if(type == PieceType.ROOK){
-//            return pieceMoves();
-//        }
-//        if(type == PieceType.KNIGHT){
-//            return pieceMoves(board, myPosition);
-//        }
+        if(type == PieceType.ROOK){
+            return pieceMovesRook(board, myPosition);
+        }
+        if(type == PieceType.KNIGHT){
+            return pieceMovesKnight(board, myPosition);
+        }
         if(type == PieceType.KING){
             return pieceMovesKing(board, myPosition);
         }
@@ -93,21 +93,152 @@ public class ChessPiece {
 //        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
 //        return possibleMoves;
 //    }
+    public Collection<ChessMove> pieceMovesRook(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
+        ChessPosition currentEndPos = new ChessPosition(myPosition.row, myPosition.col);
+        for (int i = myPosition.col + 1; i<8 && (currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1); i++){
+            currentEndPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()+i);
+            if(board.getPiece(currentEndPos) == null){
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }else {
+                break;
+            }
+        }
+        for (int i = myPosition.col -1; i>=0 && (currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1); i--){
+            currentEndPos = new ChessPosition(myPosition.getRow(), myPosition.getColumn()-1);
+            if(board.getPiece(currentEndPos) == null){
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }else {
+                break;
+            }
+        }
+        for (int i = myPosition.row -1; i>=0 && (currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1); i--){
+            currentEndPos = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn());
+            if(board.getPiece(currentEndPos) == null){
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }else {
+                break;
+            }
+        }
+        for (int i = myPosition.row +1; i<8 && (currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1); i++){
+            currentEndPos = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn());
+            if(board.getPiece(currentEndPos) == null){
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }else {
+                break;
+            }
+        }
+        return possibleMoves;
+    }
+    public Collection<ChessMove> pieceMovesKnight(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
+        ChessPosition currentEndPos = new ChessPosition(myPosition.row+1, myPosition.col+2);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row-1, myPosition.col+2);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row-1, myPosition.col-2);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row+1, myPosition.col-2);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+
+        currentEndPos = new ChessPosition(myPosition.row+2, myPosition.col+1);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row+2, myPosition.col-1);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row-2, myPosition.col+1);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+        currentEndPos = new ChessPosition(myPosition.row-2, myPosition.col-1);
+        if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
+            if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+            }
+        }
+
+        return possibleMoves;
+    }
     public Collection<ChessMove> pieceMovesBishop(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> possibleMoves = new HashSet<ChessMove>();
         ChessPosition currentEndPos = new ChessPosition(myPosition.row, myPosition.col);
-        int i = -7;
+        int i = 1;
+        int pieceFlag1 = 0;
+        int pieceFlag2 = 0;
+        int pieceFlag3 = 0;
+        int pieceFlag4 = 0;
         while(i < 8){
             currentEndPos = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()+i);
-            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
-                if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1 && pieceFlag1 == 0) ) {
+                if (board.getPiece(currentEndPos) == null) {
                     possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                }
+                if(board.getPiece(currentEndPos) != null){
+                    pieceFlag1 = 1;
+                    if(board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                        possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                    }
                 }
             }
             currentEndPos = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()+i);
-            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1) ) {
-                if (board.getPiece(currentEndPos) == null || board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1 && pieceFlag2 == 0) ) {
+                if (board.getPiece(currentEndPos) == null) {
                     possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                }
+                if(board.getPiece(currentEndPos) != null){
+                    pieceFlag2 = 1;
+                    if(board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                        possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                    }
+                }
+            }
+            currentEndPos = new ChessPosition(myPosition.getRow()+i, myPosition.getColumn()-i);
+            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1 && pieceFlag3 == 0) ) {
+                if (board.getPiece(currentEndPos) == null) {
+                    possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                }
+                if(board.getPiece(currentEndPos) != null){
+                    pieceFlag3 = 1;
+                    if(board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                        possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                    }
+                }
+            }
+            currentEndPos = new ChessPosition(myPosition.getRow()-i, myPosition.getColumn()-i);
+            if((currentEndPos.getRow() <= 8 && currentEndPos.getRow() >= 1) && (currentEndPos.getColumn() <= 8 && currentEndPos.getColumn() >= 1 && pieceFlag4 == 0) ) {
+                if (board.getPiece(currentEndPos) == null) {
+                    possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                }
+                if(board.getPiece(currentEndPos) != null){
+                    pieceFlag4 = 1;
+                    if(board.getPiece(currentEndPos).pieceColor != this.pieceColor) {
+                        possibleMoves.add(new ChessMove(myPosition, currentEndPos, null));
+                    }
                 }
             }
             i = i + 1;
