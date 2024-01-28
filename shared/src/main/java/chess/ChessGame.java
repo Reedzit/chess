@@ -11,8 +11,10 @@ import java.util.Collection;
 public class ChessGame {
 
         TeamColor currentTurn;
+        ChessBoard currentBoard;
     public ChessGame() {
-        this.currentTurn = TeamColor.WHITE;
+        setTeamTurn(TeamColor.WHITE);
+        setBoard(new ChessBoard());
     }
 
     /**
@@ -47,7 +49,7 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        return getBoard().getPiece(startPosition).pieceMoves(getBoard(),startPosition);
     }
 
     /**
@@ -88,7 +90,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return false;
     }
 
     /**
@@ -97,7 +99,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.currentBoard = board;
     }
 
     /**
@@ -106,6 +108,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.currentBoard;
     }
 }
