@@ -112,7 +112,28 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // get king position
+        ChessPosition kingPosition = null;
+        boardLoop:
+        for ( int i = 0; i < 8; i++){
+            for ( int j = 0; j < 8; j++){
+                if (getBoard().board[i][j] == null) continue;
+                ChessPosition currPos = new ChessPosition(i+1,j+1);
+                if (getBoard().board[currPos.getRow()][currPos.getColumn()].type == ChessPiece.PieceType.KING && teamColor == getBoard().board[currPos.getRow()][currPos.getColumn()].pieceColor) {
+                    kingPosition = new ChessPosition(i+1,j+1);
+                    break boardLoop;
+                }
+            }
+        }
+        // get set of moves for the king
+         Collection<ChessMove> validKingMoves = validMoves(kingPosition);
+        //make deep copy of current board
+        for (ChessMove move : validKingMoves){
+            ChessBoard currBoard = getBoard().copyBoard();
+        }
+        // if all boards with simulated moves are in check then return true for checkmate.
+
+        return false;
     }
 
     /**
