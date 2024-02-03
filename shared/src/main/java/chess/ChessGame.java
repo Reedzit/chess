@@ -53,6 +53,9 @@ public class ChessGame {
         if(getBoard().getPiece(startPosition) != null) {
             Collection<ChessMove> possibleMoves = getBoard().getPiece(startPosition).pieceMoves(getBoard(), startPosition);
             for (ChessMove move : possibleMoves){
+                if (isInCheck(this.currentTurn)){
+
+                }
                 //logic for each condition;
                 return null;
             }
@@ -71,6 +74,12 @@ public class ChessGame {
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
             this.getBoard().board[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = null;
             this.getBoard().board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = new ChessPiece(startPiece.pieceColor, startPiece.type);
+
+            if (this.currentTurn == TeamColor.WHITE){
+                this.currentTurn = TeamColor.BLACK;
+            }else {
+                this.currentTurn = TeamColor.WHITE;
+            }
         }else {
             throw new InvalidMoveException("Cannot make this move");
         }
@@ -128,12 +137,17 @@ public class ChessGame {
         // get set of moves for the king
          Collection<ChessMove> validKingMoves = validMoves(kingPosition);
         //make deep copy of current board
+        int checkCounter = 0;
         for (ChessMove move : validKingMoves){
-            ChessBoard currBoard = getBoard().copyBoard();
+            ChessGame currGame = this.copyGame();
+            currGame.getBoard().board[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = null;
+            currGame.getBoard().board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+            if (currGame.isInCheck(this.currentTurn)){
+               checkCounter += 1;                                         //this board move puts the king in check
+            }
         }
+        return validKingMoves.size() == checkCounter;
         // if all boards with simulated moves are in check then return true for checkmate.
-
-        return false;
     }
 
     /**
@@ -154,6 +168,13 @@ public class ChessGame {
             }
         }
         return potentialMoves.isEmpty();
+    }
+
+    public ChessGame copyGame(){
+        ChessGame gameCopy = new ChessGame();
+        gameCopy.currentTurn = this.currentTurn;
+        gameCopy.currentBoard = this.getBoard().copyBoard();
+        return gameCopy;
     }
 
     /**
