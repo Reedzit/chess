@@ -72,7 +72,7 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        if (validMoves(move.getStartPosition()).contains(move)){
+        if (getBoard().getPiece(move.getStartPosition()).getTeamColor()== this.currentTurn && validMoves(move.getStartPosition()).contains(move)){
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
             if (this.getBoard().getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.promotionPiece != null){     //logic for promotion piece
                 if (this.getBoard().getPiece(move.getStartPosition()).pieceColor == TeamColor.WHITE && move.getEndPosition().getRow() == 1){
