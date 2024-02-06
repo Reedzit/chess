@@ -74,9 +74,18 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (validMoves(move.getStartPosition()).contains(move)){
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
-            this.getBoard().addPiece(move.getEndPosition(), startPiece);
-            this.getBoard().addPiece(move.getStartPosition(), null);
-
+            if (this.getBoard().getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.promotionPiece != null){     //logic for promotion piece
+                if (this.getBoard().getPiece(move.getStartPosition()).pieceColor == TeamColor.WHITE && move.getEndPosition().getRow() == 1){
+                    this.getBoard().addPiece(move.getEndPosition(), new ChessPiece(startPiece.pieceColor, move.promotionPiece));
+                    this.getBoard().addPiece(move.getStartPosition(), null);
+                }else if (this.getBoard().getPiece(move.getStartPosition()).pieceColor == TeamColor.BLACK && move.getEndPosition().getRow() == 8){
+                    this.getBoard().addPiece(move.getEndPosition(), new ChessPiece(startPiece.pieceColor, move.promotionPiece));
+                    this.getBoard().addPiece(move.getStartPosition(), null);
+                }
+            }else {
+                this.getBoard().addPiece(move.getEndPosition(), startPiece);
+                this.getBoard().addPiece(move.getStartPosition(), null);
+            }
             if (this.currentTurn == TeamColor.WHITE){
                 this.currentTurn = TeamColor.BLACK;
             }else {
@@ -100,7 +109,9 @@ public class ChessGame {
             for ( int j = 0; j < 8; j++){
                 if (getBoard().board[i][j] == null) continue;
                 ChessPosition currPos = new ChessPosition(i+1,j+1);
-                potentialKingKillers.addAll(this.getBoard().getPiece(currPos).pieceMoves(this.getBoard(), currPos));
+                if (getBoard().getPiece(currPos).pieceColor != teamColor) {
+                    potentialKingKillers.addAll(this.getBoard().getPiece(currPos).pieceMoves(this.getBoard(), currPos));
+                }
                 if (getBoard().getPiece(currPos).type == ChessPiece.PieceType.KING && teamColor == getBoard().getPiece(currPos).pieceColor) {
                     kingPosition = new ChessPosition(i+1,j+1);
                 }
@@ -130,7 +141,7 @@ public class ChessGame {
             for ( int j = 0; j < 8; j++){
                 if (getBoard().board[i][j] == null) continue;
                 ChessPosition currPos = new ChessPosition(i+1,j+1);
-                if (getBoard().board[currPos.getRow()-1][currPos.getColumn()-1].type == ChessPiece.PieceType.KING && teamColor == getBoard().board[currPos.getRow()-1][currPos.getColumn()-1].pieceColor) {
+                if (getBoard().getPiece(currPos).type == ChessPiece.PieceType.KING && teamColor == getBoard().getPiece(currPos).pieceColor) {
                     kingPosition = new ChessPosition(i+1,j+1);
                     break boardLoop;
                 }
@@ -142,8 +153,8 @@ public class ChessGame {
         int checkCounter = 0;
         for (ChessMove move : validKingMoves){
             ChessGame currGame = this.copyGame();
-            currGame.getBoard().board[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = null;
-            currGame.getBoard().board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = new ChessPiece(teamColor, ChessPiece.PieceType.KING);
+            currGame.getBoard().addPiece(move.getEndPosition(), currGame.getBoard().getPiece(move.getStartPosition()));
+            currGame.getBoard().addPiece(move.getStartPosition(), null);
             if (currGame.isInCheck(this.currentTurn)){
                checkCounter += 1;                                         //this board move puts the king in check
             }
@@ -163,9 +174,10 @@ public class ChessGame {
         Collection<ChessMove> potentialMoves = new HashSet<>();
         for ( int i = 0; i < 8; i++){
             for ( int j = 0; j < 8; j++){
-                if (getBoard().board[i][j] == null) continue;
-                if (getBoard().board[i][i].pieceColor == teamColor) {
-                    potentialMoves.addAll(this.validMoves(new ChessPosition(i + 1, j + 1)));
+                if (getBoard().board[i][j] != null) {
+                    if (getBoard().board[i][j].pieceColor == teamColor) {
+                        potentialMoves.addAll(this.validMoves(new ChessPosition(i + 1, j + 1)));
+                    }
                 }
             }
         }

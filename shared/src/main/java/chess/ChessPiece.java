@@ -109,25 +109,29 @@ public class ChessPiece {
                 possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
             }
             // attack on right
-            currEndPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1);
-            if(board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.BLACK){
-                if(currEndPosition.getRow() == 8) {
-                    for (var piece : this.promotionTypes) {
-                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+            if (myPosition.getRow() < 8 && myPosition.getColumn() < 8) {
+                currEndPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() + 1);
+                if (board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.BLACK) {
+                    if (currEndPosition.getRow() == 8) {
+                        for (var piece : this.promotionTypes) {
+                            possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+                        }
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                     }
-                }else {
-                    possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                 }
             }
             //attack on left
-            currEndPosition = new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1);
-            if(board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.BLACK){
-                if(currEndPosition.getRow() == 8) {
-                    for (var piece : this.promotionTypes) {
-                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+            if (myPosition.getRow() < 8 && myPosition.getColumn() > 1) {
+                currEndPosition = new ChessPosition(myPosition.getRow() + 1, myPosition.getColumn() - 1);
+                if (board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.BLACK) {
+                    if (currEndPosition.getRow() == 8) {
+                        for (var piece : this.promotionTypes) {
+                            possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+                        }
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                     }
-                }else {
-                    possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                 }
             }
         }
@@ -148,25 +152,29 @@ public class ChessPiece {
                 possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
             }
             // attack on right
-            currEndPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1);
-            if(board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.WHITE){
-                if(currEndPosition.getRow() == 1) {
-                    for (var piece : this.promotionTypes) {
-                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+            if (myPosition.getRow() > 1 && myPosition.getColumn() < 8) {
+                currEndPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() + 1);
+                if (board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.WHITE) {
+                    if (currEndPosition.getRow() == 1) {
+                        for (var piece : this.promotionTypes) {
+                            possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+                        }
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                     }
-                }else {
-                    possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                 }
             }
             //attack on left
-            currEndPosition = new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1);
-            if(board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.WHITE){
-                if(currEndPosition.getRow() == 1) {
-                    for (var piece : this.promotionTypes) {
-                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+            if (myPosition.getRow() > 1 && myPosition.getColumn() > 1) {
+                currEndPosition = new ChessPosition(myPosition.getRow() - 1, myPosition.getColumn() - 1);
+                if (board.getPiece(currEndPosition) != null && board.getPiece(currEndPosition).pieceColor == ChessGame.TeamColor.WHITE) {
+                    if (currEndPosition.getRow() == 1) {
+                        for (var piece : this.promotionTypes) {
+                            possibleMoves.add(new ChessMove(myPosition, currEndPosition, piece));
+                        }
+                    } else {
+                        possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                     }
-                }else {
-                    possibleMoves.add(new ChessMove(myPosition, currEndPosition, null));
                 }
             }
         }
