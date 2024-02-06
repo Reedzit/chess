@@ -50,17 +50,17 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+        HashSet<ChessMove> movesThatWork = new HashSet<>();
+        if(isInCheckmate(this.currentTurn) || isInStalemate(this.currentTurn)) return null;
         if(getBoard().getPiece(startPosition) != null) {
             Collection<ChessMove> possibleMoves = getBoard().getPiece(startPosition).pieceMoves(getBoard(), startPosition);
             for (ChessMove move : possibleMoves){
-                if (isInCheck(this.currentTurn)){
-
-                }
+                if (isInCheck(this.currentTurn)) continue;
+                movesThatWork.add(move);
                 //logic for each condition;
-                return null;
             }
         }
-        return null;
+        return movesThatWork;
     }
 
     /**
@@ -72,8 +72,8 @@ public class ChessGame {
     public void makeMove(ChessMove move) throws InvalidMoveException {
         if (validMoves(move.getStartPosition()).contains(move)){
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
-            this.getBoard().board[move.getStartPosition().getRow()][move.getStartPosition().getColumn()] = null;
-            this.getBoard().board[move.getEndPosition().getRow()][move.getEndPosition().getColumn()] = new ChessPiece(startPiece.pieceColor, startPiece.type);
+            this.getBoard().board[move.getStartPosition().getRow()-1][move.getStartPosition().getColumn()-1] = null;
+            this.getBoard().board[move.getEndPosition().getRow()-1][move.getEndPosition().getColumn()-1] = new ChessPiece(startPiece.pieceColor, startPiece.type);
 
             if (this.currentTurn == TeamColor.WHITE){
                 this.currentTurn = TeamColor.BLACK;
@@ -128,7 +128,7 @@ public class ChessGame {
             for ( int j = 0; j < 8; j++){
                 if (getBoard().board[i][j] == null) continue;
                 ChessPosition currPos = new ChessPosition(i+1,j+1);
-                if (getBoard().board[currPos.getRow()][currPos.getColumn()].type == ChessPiece.PieceType.KING && teamColor == getBoard().board[currPos.getRow()][currPos.getColumn()].pieceColor) {
+                if (getBoard().board[currPos.getRow()-1][currPos.getColumn()-1].type == ChessPiece.PieceType.KING && teamColor == getBoard().board[currPos.getRow()-1][currPos.getColumn()-1].pieceColor) {
                     kingPosition = new ChessPosition(i+1,j+1);
                     break boardLoop;
                 }
