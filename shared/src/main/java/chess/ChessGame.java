@@ -65,21 +65,13 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> movesThatWork = new HashSet<>();
-        if(getBoard().getPiece(startPosition) != null && getBoard().getPiece(startPosition).getTeamColor() == getTeamTurn()) {
+        if(getBoard().getPiece(startPosition) != null) {
             Collection<ChessMove> possibleMoves = getBoard().getPiece(startPosition).pieceMoves(getBoard(), startPosition);
             for (ChessMove move : possibleMoves){
-                if (getBoard().getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()) continue;
                 ChessGame copyGame = this.copyGame();
                 copyGame.getBoard().addPiece(move.getEndPosition(), new ChessPiece(copyGame.getBoard().getPiece(move.getStartPosition()).getTeamColor(),copyGame.getBoard().getPiece(startPosition).getPieceType()));
                 copyGame.getBoard().addPiece(startPosition, null);
-//                if (copyGame.getTeamTurn() == TeamColor.BLACK) {
-//                    copyGame.setTeamTurn(TeamColor.WHITE);
-//                }else{
-//                    copyGame.setTeamTurn(TeamColor.BLACK);
-//                }
-                if (copyGame.isInCheck(copyGame.getTeamTurn())) {
-                    continue;
-                }else{
+                if (!copyGame.isInCheck(getBoard().getPiece(startPosition).getTeamColor())) {
                     movesThatWork.add(move);
                 }
             }
