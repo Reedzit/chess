@@ -60,7 +60,7 @@ public class ChessBoard {
             for (int j = 0; j < 8; j++){
                 if (board[i][j] == null) continue;
                 currPiece = board[i][j];
-                copy.board[i][j] = new ChessPiece(currPiece.pieceColor, currPiece.type);
+                copy.board[i][j] = new ChessPiece(currPiece.getTeamColor(), currPiece.getPieceType());
             }
         }
         return copy;
