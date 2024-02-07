@@ -60,7 +60,6 @@ public class ChessGame {
                 if (!copyGame.isInCheck(copyGame.getTeamTurn())){
                     movesThatWork.add(move);
                 }
-                //logic for each condition;
             }
         }
         return movesThatWork;
