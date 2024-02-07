@@ -2,6 +2,7 @@ package chess;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Objects;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -42,6 +43,19 @@ public class ChessGame {
         BLACK
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessGame chessGame = (ChessGame) o;
+        return currentTurn == chessGame.currentTurn && Objects.equals(currentBoard, chessGame.currentBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(currentTurn, currentBoard);
+    }
+
     /**
      * Gets a valid moves for a piece at the given location
      *
@@ -51,13 +65,21 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         HashSet<ChessMove> movesThatWork = new HashSet<>();
-        if(getBoard().getPiece(startPosition) != null) {
+        if(getBoard().getPiece(startPosition) != null && getBoard().getPiece(startPosition).getTeamColor() == getTeamTurn()) {
             Collection<ChessMove> possibleMoves = getBoard().getPiece(startPosition).pieceMoves(getBoard(), startPosition);
             for (ChessMove move : possibleMoves){
+                if (getBoard().getPiece(move.getStartPosition()).getTeamColor() != getTeamTurn()) continue;
                 ChessGame copyGame = this.copyGame();
-                copyGame.getBoard().addPiece(move.getEndPosition(), copyGame.getBoard().getPiece(startPosition));
+                copyGame.getBoard().addPiece(move.getEndPosition(), new ChessPiece(copyGame.getBoard().getPiece(move.getStartPosition()).getTeamColor(),copyGame.getBoard().getPiece(startPosition).getPieceType()));
                 copyGame.getBoard().addPiece(startPosition, null);
-                if (!copyGame.isInCheck(copyGame.getTeamTurn())){
+//                if (copyGame.getTeamTurn() == TeamColor.BLACK) {
+//                    copyGame.setTeamTurn(TeamColor.WHITE);
+//                }else{
+//                    copyGame.setTeamTurn(TeamColor.BLACK);
+//                }
+                if (copyGame.isInCheck(copyGame.getTeamTurn())) {
+                    continue;
+                }else{
                     movesThatWork.add(move);
                 }
             }
@@ -113,7 +135,7 @@ public class ChessGame {
                     potentialKingKillers.addAll(this.getBoard().getPiece(currPos).pieceMoves(this.getBoard(), currPos));
                 }
                 if (getBoard().getPiece(currPos).getPieceType() == ChessPiece.PieceType.KING && teamColor == getBoard().getPiece(currPos).getTeamColor()) {
-                    kingPosition = new ChessPosition(i+1,j+1);
+                    kingPosition = currPos;
                 }
             }
         }
@@ -167,20 +189,21 @@ public class ChessGame {
         Collection<ChessMove> potentialMoves = new HashSet<>();
         for ( int i = 0; i < 8; i++){
             for ( int j = 0; j < 8; j++){
-                if (getBoard().board[i][j] != null) {
-                    if (getBoard().board[i][j].getTeamColor() == teamColor) {
-                        potentialMoves.addAll(this.validMoves(new ChessPosition(i + 1, j + 1)));
+                ChessPosition currPosition = new ChessPosition(i + 1, j + 1);
+                if (getBoard().getPiece(currPosition) != null) {
+                    if (getBoard().getPiece(currPosition).getTeamColor() == teamColor) {
+                        potentialMoves.addAll(validMoves(currPosition));
                     }
                 }
             }
         }
-        return potentialMoves.isEmpty();
+        return potentialMoves.isEmpty() && getTeamTurn() == teamColor;
     }
 
     public ChessGame copyGame(){
         ChessGame gameCopy = new ChessGame();
-        gameCopy.currentTurn = this.currentTurn;
-        gameCopy.currentBoard = this.getBoard().copyBoard();
+        gameCopy.setTeamTurn(currentTurn);
+        gameCopy.setBoard(this.getBoard().copyBoard());
         return gameCopy;
     }
 

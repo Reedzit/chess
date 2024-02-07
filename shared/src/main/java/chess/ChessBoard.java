@@ -55,11 +55,10 @@ public class ChessBoard {
 
     public ChessBoard copyBoard(){
         ChessBoard copy = new ChessBoard();
-        ChessPiece currPiece;
         for (int i = 0; i < 8; i++){
             for (int j = 0; j < 8; j++){
                 if (board[i][j] == null) continue;
-                currPiece = board[i][j];
+                ChessPiece currPiece = board[i][j];
                 copy.board[i][j] = new ChessPiece(currPiece.getTeamColor(), currPiece.getPieceType());
             }
         }
