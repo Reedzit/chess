@@ -11,7 +11,7 @@ import spark.Route;
 public class ListGameHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        String authToken = new Gson().fromJson(request.body(), String.class);
+        String authToken = request.headers("authorization");
         return new Gson().toJson(new GameService().getGameList(authToken));
     }
 }

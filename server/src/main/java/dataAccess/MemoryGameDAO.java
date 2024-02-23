@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
-    List<GameData> gameList = new ArrayList<>();
+    static final private List<GameData> games = new ArrayList<>();
     @Override
     public void createGame(GameData game) {
-        gameList.add(game);
+        games.add(game);
     }
 
     @Override
     public GameData getGame(int id) {
-        for (var curr : gameList){
+        for (var curr : games){
             if (id == curr.gameID()){
                 return curr;
             }
@@ -24,17 +24,22 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public List<GameData> listGames() {
-        return gameList;
+        return games;
     }
 
     @Override
     public void updateGame(GameData game) {
-        for (var curr : gameList){
+        for (var curr : games){
             if (game.gameID() == curr.gameID()){
-                gameList.remove(curr);
-                gameList.add(game);
+                games.remove(curr);
+                games.add(game);
                 break;
             }
         }
+    }
+
+    @Override
+    public void clear() {
+        games.clear();
     }
 }

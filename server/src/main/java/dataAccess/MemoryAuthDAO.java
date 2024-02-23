@@ -1,21 +1,17 @@
 package dataAccess;
 
 import model.AuthData;
-import model.UserData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO{
-    HashMap<String, String> authTable = new HashMap<>();
-    List<AuthData> authList = new ArrayList<>();
+    static final private List<AuthData> authList = new ArrayList<>();
     @Override
     public String createAuth(String username) {
         String authToken = UUID.randomUUID().toString();
         authList.add(new AuthData(authToken, username));
-        authTable.put(authToken, username);
         return authToken;
     }
 
@@ -36,6 +32,6 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void clear() {
-
+        authList.clear();
     }
 }
