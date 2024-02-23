@@ -13,7 +13,7 @@ public class RegisterHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
         UserData user = new Gson().fromJson(request.body(), UserData.class);
-        AuthData authData = new UserService().register(user);
-        return new Gson().toJson(authData);
+        String authToken = new UserService().register(user);
+        return new Gson().toJson(authToken);
     }
 }

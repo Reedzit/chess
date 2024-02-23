@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface GameDAO {
     void createGame(GameData game);
-    GameData getGame(GameData game);
+    GameData getGame(int id);
     List<GameData> listGames();
     void updateGame(GameData game);
+    void clear();
 }

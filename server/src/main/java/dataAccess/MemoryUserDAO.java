@@ -12,8 +12,8 @@ public class MemoryUserDAO implements UserDAO{
     }
 
     @Override
-    public UserData getUser(UserData entry) {
-        return userTable.get(entry.username());
+    public UserData getUser(String username) {
+        return userTable.get(username);
     }
 
     @Override
