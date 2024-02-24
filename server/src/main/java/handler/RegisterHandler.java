@@ -16,7 +16,7 @@ public class RegisterHandler implements Route {
         UserData user = new Gson().fromJson(request.body(), UserData.class);
         RegisterResponse registerResponse = new UserService().register(user);
         switch (registerResponse.message()) {
-            case "" -> response.status(200);
+            case null -> response.status(200);
             case "Error: already taken" -> response.status(403);
             case "Error: bad request" -> response.status(400);
             default -> response.status(500);

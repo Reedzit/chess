@@ -13,6 +13,7 @@ public class ClearHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
         new ClearAppService().clearAll();
+        response.status(200);
         return new Gson().toJson("{}");
     }
 }

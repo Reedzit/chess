@@ -16,7 +16,7 @@ public class LoginHandler implements Route {
         LoginRequest loginRequest = new Gson().fromJson(request.body(), LoginRequest.class);
         LoginResponse loginResponse = new UserService().login(loginRequest);
         switch (loginResponse.message()){
-            case "" -> response.status(200);
+            case null -> response.status(200);
             case "Error: unauthorized" -> response.status(401);
             default -> response.status(500);
         }

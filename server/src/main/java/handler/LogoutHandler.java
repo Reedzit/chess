@@ -14,7 +14,7 @@ public class LogoutHandler implements Route {
         String authToken = request.headers("authorization");
         LogoutResponse logoutResponse = new UserService().logout(authToken);
         switch (logoutResponse.message()){
-            case "" -> response.status(200);
+            case null -> response.status(200);
             case "Error: unauthorized" -> response.status(401);
             default -> response.status(500);
         }
