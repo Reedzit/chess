@@ -6,6 +6,7 @@ import model.UserData;
 public interface AuthDAO{
     String createAuth(String username);
     String getAuth(String token);
+    String getUsername(String token);
     void deleteAuth(String token);
     void clear();
 }

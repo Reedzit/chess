@@ -1,7 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import responses.LogoutResponse;
+import responses.EmptyResponse;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -12,7 +12,7 @@ public class LogoutHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
         String authToken = request.headers("authorization");
-        LogoutResponse logoutResponse = new UserService().logout(authToken);
+        EmptyResponse logoutResponse = new UserService().logout(authToken);
         switch (logoutResponse.message()){
             case null -> response.status(200);
             case "Error: unauthorized" -> response.status(401);

@@ -81,9 +81,9 @@ public class StandardAPITests {
     public void staticFiles() throws Exception {
         String htmlFromServer = serverFacade.file("/").replaceAll("\r", "");
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
-        assertNotNull(htmlFromServer, "server.Server returned an empty file");
-        assertTrue(htmlFromServer.contains("CS 240 Chess server.Server Web API"));
+                "Server response code was not 200 OK");
+        assertNotNull(htmlFromServer, "Server returned an empty file");
+        assertTrue(htmlFromServer.contains("CS 240 Chess Server Web API"));
     }
 
 
@@ -98,7 +98,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult loginResult = serverFacade.login(loginRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 loginResult.message != null && loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response returned error message");
@@ -119,7 +119,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult loginResult = serverFacade.login(loginRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
         Assertions.assertNull(loginResult.username, "Response incorrectly returned username");
@@ -138,7 +138,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult loginResult = serverFacade.login(loginRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(loginResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
         Assertions.assertNull(loginResult.username, "Response incorrectly returned username");
@@ -156,12 +156,12 @@ public class StandardAPITests {
 
         TestModels.TestLoginRegisterResult loginOne = serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertNotNull(loginOne.authToken, "Login result did not contain an authToken");
 
         TestModels.TestLoginRegisterResult loginTwo = serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertNotNull(loginTwo.authToken, "Login result did not contain an authToken");
 
         Assertions.assertNotEquals(existingAuth, loginOne.authToken,
@@ -174,7 +174,7 @@ public class StandardAPITests {
 
         TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 createResult.message != null && createResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -182,7 +182,7 @@ public class StandardAPITests {
 
         TestModels.TestResult logoutResult = serverFacade.logout(existingAuth);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 logoutResult.message != null && logoutResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
@@ -194,7 +194,7 @@ public class StandardAPITests {
 
         TestModels.TestResult joinResult = serverFacade.verifyJoinPlayer(joinRequest, loginOne.authToken);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 joinResult.message != null && joinResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -202,7 +202,7 @@ public class StandardAPITests {
 
         TestModels.TestListResult listResult = serverFacade.listGames(loginTwo.authToken);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 listResult.message != null && listResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
@@ -224,7 +224,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult registerResult = serverFacade.register(registerRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 registerResult.message != null && registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
@@ -248,7 +248,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult registerResult = serverFacade.register(registerRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, serverFacade.getStatusCode(),
-                "server.Server response code was not 403 Forbidden");
+                "Server response code was not 403 Forbidden");
         Assertions.assertTrue(registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
         Assertions.assertNull(registerResult.username, "Response incorrectly contained username");
@@ -269,7 +269,7 @@ public class StandardAPITests {
         TestModels.TestLoginRegisterResult registerResult = serverFacade.register(registerRequest);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, serverFacade.getStatusCode(),
-                "server.Server response code was not 400 Bad Request");
+                "Server response code was not 400 Bad Request");
         Assertions.assertTrue(registerResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response missing error message");
         Assertions.assertNull(registerResult.username, "Response incorrectly contained username");
@@ -285,7 +285,7 @@ public class StandardAPITests {
         TestModels.TestResult result = serverFacade.logout(existingAuth);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(result.message != null && result.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response gave an error message");
     }
@@ -301,7 +301,7 @@ public class StandardAPITests {
         TestModels.TestResult result = serverFacade.logout(existingAuth);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(result.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Response did not return error message");
     }
@@ -314,7 +314,7 @@ public class StandardAPITests {
         TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 createResult.message != null && createResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -333,7 +333,7 @@ public class StandardAPITests {
         TestModels.TestCreateResult createResult = serverFacade.createGame(createRequest, existingAuth);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(createResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Bad result did not return an error message");
         Assertions.assertNull(createResult.gameID, "Bad result returned a game ID");
@@ -356,7 +356,7 @@ public class StandardAPITests {
 
         //check succeeded
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -364,7 +364,7 @@ public class StandardAPITests {
 
         TestModels.TestListResult listResult = serverFacade.listGames(existingAuth);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertEquals(1, listResult.games.length, "List Games returned an incorrect number of games");
         Assertions.assertNull(listResult.games[0].whiteUsername, "Player present on a game that no player joined");
         Assertions.assertNull(listResult.games[0].blackUsername, "Player present on a game that no player joined");
@@ -387,7 +387,7 @@ public class StandardAPITests {
 
         //check failed
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Invalid Request didn't return an error message");
@@ -410,7 +410,7 @@ public class StandardAPITests {
 
         //check failed
         Assertions.assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, serverFacade.getStatusCode(),
-                "server.Server response code was not 400 Bad Request");
+                "Server response code was not 400 Bad Request");
         Assertions.assertTrue(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Invalid Request didn't return an error message");
@@ -435,7 +435,7 @@ public class StandardAPITests {
 
         //check succeeded
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -451,7 +451,7 @@ public class StandardAPITests {
 
         //check succeeded
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -467,7 +467,7 @@ public class StandardAPITests {
 
         //check succeeded
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -483,7 +483,7 @@ public class StandardAPITests {
 
         //check succeeded
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 watchResult.message != null && watchResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -507,7 +507,7 @@ public class StandardAPITests {
 
         //check
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 joinResult.message != null && joinResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Result returned an error message");
@@ -537,7 +537,7 @@ public class StandardAPITests {
 
         //check
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
         Assertions.assertTrue(
                 joinResult.message != null && joinResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Invalid Request didn't return an error message");
@@ -572,7 +572,7 @@ public class StandardAPITests {
 
         //check failed
         Assertions.assertEquals(HttpURLConnection.HTTP_FORBIDDEN, serverFacade.getStatusCode(),
-                "server.Server response code was not 403 Forbidden");
+                "Server response code was not 403 Forbidden");
         Assertions.assertTrue(
                 joinResult.message != null && joinResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Invalid Request didn't return an error message");
@@ -597,7 +597,7 @@ public class StandardAPITests {
 
         //check
         Assertions.assertEquals(HttpURLConnection.HTTP_BAD_REQUEST, serverFacade.getStatusCode(),
-                "server.Server response code was not 400 Bad Request");
+                "Server response code was not 400 Bad Request");
         Assertions.assertTrue(
                 joinResult.message != null && joinResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Invalid Request didn't return an error message");
@@ -611,7 +611,7 @@ public class StandardAPITests {
         TestModels.TestListResult result = serverFacade.listGames(existingAuth);
 
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertTrue(result.games == null || result.games.length == 0,
                 "Found games when none should be there");
         Assertions.assertFalse(result.message != null && result.message.toLowerCase(Locale.ROOT).contains("error"),
@@ -723,7 +723,7 @@ public class StandardAPITests {
         //list games
         TestModels.TestListResult listResult = serverFacade.listGames(existingAuth);
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Collection<TestModels.TestListResult.TestListEntry> returnedList =
                 new HashSet<>(Arrays.asList(listResult.games));
 
@@ -764,7 +764,7 @@ public class StandardAPITests {
 
         //test clear successful
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(
                 clearResult.message != null && clearResult.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Clear Result returned an error message");
@@ -776,19 +776,19 @@ public class StandardAPITests {
         loginRequest.password = existingUser.password;
         TestModels.TestLoginRegisterResult loginResult = serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
 
         //second user
         loginRequest.username = "Spongebob";
         loginRequest.password = "Squarepants";
         serverFacade.login(loginRequest);
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
 
         //try to use old auth token to list games
         serverFacade.listGames(existingAuth);
         Assertions.assertEquals(HttpURLConnection.HTTP_UNAUTHORIZED, serverFacade.getStatusCode(),
-                "server.Server response code was not 401 Unauthorized");
+                "Server response code was not 401 Unauthorized");
 
         //log in new user and check that list is empty
         registerResult = serverFacade.register(registerRequest);
@@ -796,7 +796,7 @@ public class StandardAPITests {
 
         //check listResult
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertEquals(0, listResult.games.length, "list result did not return 0 games after clear");
     }
 
@@ -813,7 +813,7 @@ public class StandardAPITests {
 
         //make sure returned good
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
-                "server.Server response code was not 200 OK");
+                "Server response code was not 200 OK");
         Assertions.assertFalse(result.message != null && result.message.toLowerCase(Locale.ROOT).contains("error"),
                 "Clear Result returned an error message");
     }

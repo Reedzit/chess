@@ -27,6 +27,15 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
+    public String getGameName(Integer gameID) throws DataAccessException {
+        try {
+            return games.get(gameID).gameName();
+        }catch (ArrayIndexOutOfBoundsException e) {
+                return null;
+        }
+    }
+
+    @Override
     public List<GameData> listGames() {
         return games;
     }

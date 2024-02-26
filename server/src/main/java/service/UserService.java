@@ -32,13 +32,13 @@ public class UserService {
         }
         return response;
     }
-    public LogoutResponse logout(String authToken){
-        LogoutResponse response = new LogoutResponse(null);
+    public EmptyResponse logout(String authToken){
+        EmptyResponse response = new EmptyResponse(null);
         String tempToken = new MemoryAuthDAO().getAuth(authToken);
         if (tempToken != null){
             new MemoryAuthDAO().deleteAuth(authToken);
         }else{
-            response = new LogoutResponse("Error: unauthorized");
+            response = new EmptyResponse("Error: unauthorized");
         }
         return response;
     }

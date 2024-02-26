@@ -8,6 +8,7 @@ import java.util.List;
 public interface GameDAO {
     Integer createGame(String gameName) throws DataAccessException;
     GameData getGame(String gameName) throws DataAccessException;
+    String getGameName(Integer gameID) throws DataAccessException;
     List<GameData> listGames() throws DataAccessException;
     void updateGame(GameData game) throws DataAccessException;
     Integer createGameID();

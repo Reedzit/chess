@@ -13,6 +13,6 @@ public class CreateGameHandler implements Route {
         String gameName = new Gson().fromJson(request.body(), String.class);
         String authToken = request.headers("authorization");
         CreateGameResponse createGameResponse = new GameService().createGame(gameName, authToken);
-        return new Gson().toJson(new GameService().createGame(gameName,authToken));
+        return new Gson().toJson(createGameResponse);
     }
 }
