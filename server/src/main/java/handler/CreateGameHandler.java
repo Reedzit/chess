@@ -16,6 +16,12 @@ public class CreateGameHandler implements Route {
         String authToken = request.headers("authorization");
         System.out.println("This is the authToken for create game: "+ authToken);
         CreateGameResponse createGameResponse = new GameService().createGame(createGameRequest.gameName(), authToken);
+        switch (createGameResponse.message()){
+            case null -> response.status(200);
+            case "Error: bad request" -> response.status(400);
+            case "Error: unauthorized" -> response.status(401);
+            default -> response.status(500);
+        }
         return new Gson().toJson(createGameResponse);
     }
 }

@@ -11,7 +11,7 @@ public class MemoryGameDAO implements GameDAO{
     static private Integer nextGameID = 0;
     @Override
     public Integer createGame(String gameName) {
-        GameData game = new GameData(createGameID(),null, null, gameName, new ChessGame());
+        GameData game = new GameData(games.size()+1,null, null, gameName, new ChessGame());
         games.add(game);
         return game.gameID();
     }
@@ -27,9 +27,9 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public String getGameName(Integer gameID) throws DataAccessException {
+    public String getGameName(Integer gameID)  {
         try {
-            return games.get(gameID).gameName();
+            return games.get(gameID-1).gameName();
         }catch (ArrayIndexOutOfBoundsException e) {
                 return null;
         }
@@ -53,7 +53,8 @@ public class MemoryGameDAO implements GameDAO{
 
     @Override
     public Integer createGameID() {
-        return nextGameID++;
+        nextGameID++;
+        return nextGameID;
     }
 
     @Override
