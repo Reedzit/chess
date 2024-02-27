@@ -11,6 +11,5 @@ public interface GameDAO {
     String getGameName(Integer gameID) throws DataAccessException;
     List<GameData> listGames() throws DataAccessException;
     void updateGame(GameData game) throws DataAccessException;
-    Integer createGameID();
     void clear();
 }

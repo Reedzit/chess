@@ -8,7 +8,6 @@ import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
     static final private List<GameData> games = new ArrayList<>();
-    static private Integer nextGameID = 0;
     @Override
     public Integer createGame(String gameName) {
         GameData game = new GameData(games.size()+1,null, null, gameName, new ChessGame());
@@ -30,7 +29,7 @@ public class MemoryGameDAO implements GameDAO{
     public String getGameName(Integer gameID)  {
         try {
             return games.get(gameID-1).gameName();
-        }catch (ArrayIndexOutOfBoundsException e) {
+        }catch (IndexOutOfBoundsException e) {
                 return null;
         }
     }
@@ -50,13 +49,6 @@ public class MemoryGameDAO implements GameDAO{
             }
         }
     }
-
-    @Override
-    public Integer createGameID() {
-        nextGameID++;
-        return nextGameID;
-    }
-
     @Override
     public void clear() {
         games.clear();
