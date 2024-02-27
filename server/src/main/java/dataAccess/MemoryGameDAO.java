@@ -23,11 +23,6 @@ public class MemoryGameDAO implements GameDAO{
                 return curr;
             }
         }
-//        for (var curr : games){
-//            if (gameName.equals(curr.gameName())){
-//                return curr;
-//            }
-//        }
         return null;
     }
 
@@ -39,11 +34,6 @@ public class MemoryGameDAO implements GameDAO{
             }
         }
         return null;
-//        try {
-//            return games.get(gameID-1).gameName();
-//        }catch (IndexOutOfBoundsException e) {
-//                return null;
-//        }
     }
 
     @Override
