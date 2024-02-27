@@ -37,7 +37,7 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String token) {
-
+        authList.removeIf(curr -> curr.authToken().equals(token));
     }
 
     @Override

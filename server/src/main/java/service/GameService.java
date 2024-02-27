@@ -38,9 +38,12 @@ public class GameService {
             GameData oldGame = gameDAO.getGame(gameDAO.getGameName(gameID));
             if (clientColor == ChessGame.TeamColor.WHITE){
                 GameData updatedGame = new GameData(oldGame.gameID(), new MemoryAuthDAO().getUsername(authToken),oldGame.blackUsername(),oldGame.gameName(),oldGame.game());
+                gameDAO.updateGame(updatedGame);
             }else{
                 GameData updatedGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), new MemoryAuthDAO().getUsername(authToken),oldGame.gameName(),oldGame.game());
+                gameDAO.updateGame(updatedGame);
             }
+
         }
         return response;
     }

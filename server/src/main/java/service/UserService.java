@@ -10,14 +10,16 @@ import java.util.Objects;
 
 public class UserService {
     public RegisterResponse register(UserData user){
-        RegisterResponse response = new RegisterResponse(null,null,null);
-        System.out.println(user);
-        if (new MemoryUserDAO().getUser(user.username()) == null) {
+        RegisterResponse response;
+//        System.out.println(user);
+        if (new MemoryUserDAO().getUser(user.username()) != null) {
+            response = new RegisterResponse(null,null,"Error: already taken");
+        }else if (user.username() == null || user.password() == null || user.email() == null){
+            response = new RegisterResponse(null, null, "Error: bad request");
+        }else{
             new MemoryUserDAO().createUser(user);
             String authToken = new MemoryAuthDAO().createAuth(user.username());
             response = new RegisterResponse(user.username(), authToken, null);
-        }else{
-            response = new RegisterResponse(null,null,"Error: already taken");
         }
         return response;
     }

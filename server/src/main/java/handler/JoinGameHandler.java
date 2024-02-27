@@ -16,8 +16,9 @@ public class JoinGameHandler implements Route {
         EmptyResponse emptyResponse = new GameService().joinGame(joinGameRequest.playerColor(), joinGameRequest.gameID(), authToken);
         switch (emptyResponse.message()){
             case null -> response.status(200);
-            case "Error: unauthorized" -> response.status(400);
-            case "Error: already taken" -> response.status(401);
+            case "Error: bad request" -> response.status(400);
+            case "Error: unauthorized" -> response.status(401);
+            case "Error: already taken" -> response.status(403);
             default -> response.status(500);
         }
         return new Gson().toJson(emptyResponse);
