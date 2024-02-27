@@ -4,53 +4,65 @@ import chess.ChessGame;
 import model.GameData;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
-    static final private List<GameData> games = new ArrayList<>();
+    static final private HashSet<GameData> gamesSet = new HashSet<>();
     @Override
     public Integer createGame(String gameName) {
-        GameData game = new GameData(games.size()+1,null, null, gameName, new ChessGame());
-        games.add(game);
+        GameData game = new GameData(gamesSet.size()+1,null, null, gameName, new ChessGame());
+        gamesSet.add(game);
         return game.gameID();
     }
 
     @Override
     public GameData getGame(String gameName) {
-        for (var curr : games){
+        for (var curr: gamesSet){
             if (gameName.equals(curr.gameName())){
                 return curr;
             }
         }
+//        for (var curr : games){
+//            if (gameName.equals(curr.gameName())){
+//                return curr;
+//            }
+//        }
         return null;
     }
 
     @Override
     public String getGameName(Integer gameID)  {
-        try {
-            return games.get(gameID-1).gameName();
-        }catch (IndexOutOfBoundsException e) {
-                return null;
+        for (var curr : gamesSet){
+            if (gameID.equals(curr.gameID())){
+                return curr.gameName();
+            }
         }
+        return null;
+//        try {
+//            return games.get(gameID-1).gameName();
+//        }catch (IndexOutOfBoundsException e) {
+//                return null;
+//        }
     }
 
     @Override
-    public List<GameData> listGames() {
-        return games;
+    public HashSet<GameData> listGames() {
+        return gamesSet;
     }
 
     @Override
     public void updateGame(GameData game) {
-        for (var curr : games){
+        for (var curr : gamesSet){
             if (game.gameID() == curr.gameID()){
-                games.remove(curr);
-                games.add(game);
+                gamesSet.remove(curr);
+                gamesSet.add(game);
                 break;
             }
         }
     }
     @Override
     public void clear() {
-        games.clear();
+        gamesSet.clear();
     }
 }
