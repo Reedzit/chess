@@ -32,6 +32,6 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public void clear() {
-
+//        updateGame("TRUNCATE games");
     }
 }

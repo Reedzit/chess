@@ -41,15 +41,15 @@ public class GameService {
             response = new EmptyResponse("Error: already taken");
         }else if (new MemoryGameDAO().getGame(gameDAO.getGameName(gameID)).whiteUsername() != null && clientColor == ChessGame.TeamColor.WHITE){
             response = new EmptyResponse("Error: already taken");
-        }else{
+        }else if (clientColor != null){
             GameData oldGame = gameDAO.getGame(gameDAO.getGameName(gameID));
+            GameData updatedGame;
             if (clientColor == ChessGame.TeamColor.WHITE){
-                GameData updatedGame = new GameData(oldGame.gameID(), new MemoryAuthDAO().getUsername(authToken),oldGame.blackUsername(),oldGame.gameName(),oldGame.game());
-                gameDAO.updateGame(updatedGame);
+                updatedGame = new GameData(oldGame.gameID(), new MemoryAuthDAO().getUsername(authToken), oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
             }else{
-                GameData updatedGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), new MemoryAuthDAO().getUsername(authToken),oldGame.gameName(),oldGame.game());
-                gameDAO.updateGame(updatedGame);
+                updatedGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), new MemoryAuthDAO().getUsername(authToken), oldGame.gameName(), oldGame.game());
             }
+            gameDAO.updateGame(updatedGame);
 
         }
         return response;

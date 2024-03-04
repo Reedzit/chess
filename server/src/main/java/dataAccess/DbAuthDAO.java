@@ -6,12 +6,12 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public String createAuth(String username) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-                var result = preparedStatement.executeQuery();
-                result.next();
-            }
-        }
+//        try (var conn = DatabaseManager.getConnection()) {
+//            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
+//                var result = preparedStatement.executeQuery();
+//                result.next();
+//            }
+//        }
         return null;
     }
 
