@@ -4,10 +4,11 @@ import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.SQLException;
+import java.sql.*;
 
 public class DbUserDAO  implements UserDAO{
     String statement = """
-            CREATE TABLE IF NOT EXISTS  users (
+            CREATE TABLE IF NOT EXISTS  user (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
@@ -22,7 +23,19 @@ public class DbUserDAO  implements UserDAO{
     }
     @Override
     public void createUser(UserData entry) {
+        var insertStatement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        var encodedPassword = encodePassword(entry.password());
+        var id = updateTable(insertStatement, entry.username(), encodedPassword, entry.email());
+    }
 
+    public Integer updateTable(String updateStatement, String username, String password, String email) throws DataAccessException {
+        try (var conn = DatabaseManager.getConnection()){
+            try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)){
+                ps.se
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public String encodePassword(String password){ return new BCryptPasswordEncoder().encode(password);}
