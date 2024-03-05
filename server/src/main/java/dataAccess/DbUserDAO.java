@@ -31,11 +31,19 @@ public class DbUserDAO  implements UserDAO{
     public Integer updateTable(String updateStatement, String username, String password, String email) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
             try (var ps = conn.prepareStatement(statement, Statement.RETURN_GENERATED_KEYS)){
-                ps.se
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, email);
+                ps.executeUpdate();
+                var result = ps.getGeneratedKeys();
+                if(result.next()) {
+                    return result.getInt(1);
+                }
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     public String encodePassword(String password){ return new BCryptPasswordEncoder().encode(password);}
@@ -48,7 +56,7 @@ public class DbUserDAO  implements UserDAO{
     public void configTable() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()){
-            try(var preparedStatement = conn.prepareStatement(statement)){
+            try (var preparedStatement = conn.prepareStatement(statement)){
                 preparedStatement.executeUpdate();
             }
         }catch (SQLException ex){

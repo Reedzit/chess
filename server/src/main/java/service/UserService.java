@@ -1,7 +1,6 @@
 package service;
 
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.*;
 import requests.LoginRequest;
 import responses.*;
@@ -9,27 +8,32 @@ import responses.*;
 import java.util.Objects;
 
 public class UserService {
+    UserDAO userDAO = new DbUserDAO();
+    AuthDAO authDAO =  new MemoryAuthDAO();
+    public UserService() throws DataAccessException {
+
+    }
     public RegisterResponse register(UserData user){
         RegisterResponse response;
 //        System.out.println(user);
-        if (new MemoryUserDAO().getUser(user.username()) != null) {
+        if (userDAO.getUser(user.username()) != null) {
             response = new RegisterResponse(null,null,"Error: already taken");
         }else if (user.username() == null || user.password() == null || user.email() == null){
             response = new RegisterResponse(null, null, "Error: bad request");
         }else{
-            new MemoryUserDAO().createUser(user);
+            userDAO.createUser(user);
             String authToken = new MemoryAuthDAO().createAuth(user.username());
             response = new RegisterResponse(user.username(), authToken, null);
         }
         return response;
     }
-    public LoginResponse login(LoginRequest loginRequest){
+    public LoginResponse login(LoginRequest loginRequest) throws DataAccessException {
         LoginResponse response = new LoginResponse(null,null,null);
-        UserData userData = new MemoryUserDAO().getUser(loginRequest.username());
-        if (new MemoryUserDAO().getUser(loginRequest.username()) == null || !Objects.equals(userData.password(), loginRequest.password())){
+        UserData userData = userDAO.getUser(loginRequest.username());
+        if (userDAO.getUser(loginRequest.username()) == null || !Objects.equals(userData.password(), loginRequest.password())){
             response = new LoginResponse(null, null, "Error: unauthorized");
         }else {
-            String authToken = new MemoryAuthDAO().createAuth(userData.username());
+            String authToken = authDAO.createAuth(userData.username());
             response = new LoginResponse(userData.username(),authToken, null);
         }
         return response;
