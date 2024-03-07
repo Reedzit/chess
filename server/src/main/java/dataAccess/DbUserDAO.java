@@ -4,7 +4,6 @@ import model.UserData;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.SQLException;
-import java.sql.*;
 
 public class DbUserDAO  implements UserDAO{
     String initStatement = """
@@ -25,21 +24,13 @@ public class DbUserDAO  implements UserDAO{
     public void createUser(UserData entry) throws DataAccessException {
         var insertStatement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         var encodedPassword = encodePassword(entry.password());
-        var id = updateTable(insertStatement, entry.username(), encodedPassword, entry.email());
-    }
-
-    public Integer updateTable(String updateStatement, String username, String password, String email) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()){
-            try (var ps = conn.prepareStatement(updateStatement)) {
-                ps.setString(1, username);
-                ps.setString(2, password);
-                ps.setString(3, email);
+            try (var ps = conn.prepareStatement(insertStatement)) {
+                ps.setString(1, entry.username());
+                ps.setString(2, encodedPassword);
+                ps.setString(3, entry.email());
                 ps.executeUpdate();
-
-                var result = ps.getGeneratedKeys();
-                int id = result.getInt(1);
                 ps.close();
-                return id;
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -50,11 +41,11 @@ public class DbUserDAO  implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM user WHERE username = %s", username);
+        var selectStatement = String.format("SELECT * FROM user WHERE username = '%s'", username);
         System.out.println("DOEs it get here?" + selectStatement);
         try (var conn = DatabaseManager.getConnection()){
-            try (var ps = conn.createStatement()){
-                var result = ps.executeQuery(selectStatement);
+            try (var statement = conn.createStatement()){
+                var result = statement.executeQuery(selectStatement);
                 if (result.next()){
                     return new UserData(result.getString(2), result.getString(3), result.getString(4));
                 }else {
@@ -79,11 +70,10 @@ public class DbUserDAO  implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE user;";
+        String deleteStatement = "TRUNCATE TABLE chess.user;";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);
-                statement.close();
             }
         }catch (SQLException e){
             throw new DataAccessException(e.getMessage());

@@ -1,5 +1,6 @@
 package serviceTests;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 
 public class ClearAppServiceTests {
     @Test
-    public void clearAppTest(){
+    public void clearAppTest() throws DataAccessException {
         // add things to database
         MemoryAuthDAO auth1 = new MemoryAuthDAO();
         String authToken1 = auth1.createAuth("username1");

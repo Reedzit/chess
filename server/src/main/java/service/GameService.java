@@ -7,48 +7,41 @@ import responses.CreateGameResponse;
 import responses.EmptyResponse;
 import responses.GameListResponse;
 
-import java.util.List;
-import java.util.zip.CheckedOutputStream;
-
 public class GameService {
-    UserDAO userDAO = new MemoryUserDAO();
-    AuthDAO authDAO = new MemoryAuthDAO();
-    GameDAO gameDAO = new MemoryGameDAO();
+    AuthDAO authDAO = new DbAuthDAO();
+    GameDAO gameDAO = new DbGameDAO();
+
+    public GameService() throws DataAccessException {
+    }
 
     public CreateGameResponse createGame(String gameName, String authToken) throws DataAccessException {
-//        System.out.println("This is the gameName for createGame" + gameName);
-//        System.out.println("This is the game from the DAO: " + new MemoryGameDAO().getGame(gameName));
-        CreateGameResponse response = new CreateGameResponse(null, null);
+        CreateGameResponse response;
         if (authDAO.getAuth(authToken) == null){
-//            System.out.println("unauthorized");
             response = new CreateGameResponse(null, "Error: unauthorized");
         }else if (gameName == null || gameDAO.getGame(gameName) != null){
             response = new CreateGameResponse(null, "Error: bad request");
         }else {
-//            System.out.println("this shows that the game is being made");
             response = new CreateGameResponse(gameDAO.createGame(gameName), null);
-//            System.out.println("This is the response" + response);
         }
-//        System.out.println("This is the response for createGame: " + response);
         return response;
     }
     public EmptyResponse joinGame(ChessGame.TeamColor clientColor, Integer gameID, String authToken) throws DataAccessException {
         EmptyResponse response = new EmptyResponse(null);
-        if (new MemoryAuthDAO().getAuth(authToken) == null){
+        if (authDAO.getAuth(authToken) == null){
             response = new EmptyResponse("Error: unauthorized");
-        }else if (new MemoryGameDAO().getGameName(gameID) == null){
+        }else if (gameDAO.getGameName(gameID) == null){
             response = new EmptyResponse("Error: bad request");
-        }else if (new MemoryGameDAO().getGame(gameDAO.getGameName(gameID)).blackUsername() != null && clientColor == ChessGame.TeamColor.BLACK){
+        }else if (gameDAO.getGame(gameDAO.getGameName(gameID)).blackUsername() != null && clientColor == ChessGame.TeamColor.BLACK){
             response = new EmptyResponse("Error: already taken");
-        }else if (new MemoryGameDAO().getGame(gameDAO.getGameName(gameID)).whiteUsername() != null && clientColor == ChessGame.TeamColor.WHITE){
+        }else if (gameDAO.getGame(gameDAO.getGameName(gameID)).whiteUsername() != null && clientColor == ChessGame.TeamColor.WHITE){
             response = new EmptyResponse("Error: already taken");
         }else if (clientColor != null){
             GameData oldGame = gameDAO.getGame(gameDAO.getGameName(gameID));
             GameData updatedGame;
             if (clientColor == ChessGame.TeamColor.WHITE){
-                updatedGame = new GameData(oldGame.gameID(), new MemoryAuthDAO().getUsername(authToken), oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+                updatedGame = new GameData(oldGame.gameID(), authDAO.getUsername(authToken), oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
             }else{
-                updatedGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), new MemoryAuthDAO().getUsername(authToken), oldGame.gameName(), oldGame.game());
+                updatedGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), authDAO.getUsername(authToken), oldGame.gameName(), oldGame.game());
             }
             gameDAO.updateGame(updatedGame);
 

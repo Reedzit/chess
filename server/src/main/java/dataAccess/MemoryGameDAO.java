@@ -2,10 +2,7 @@ package dataAccess;
 
 import chess.ChessGame;
 import model.GameData;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
     static final private HashSet<GameData> gamesSet = new HashSet<>();
