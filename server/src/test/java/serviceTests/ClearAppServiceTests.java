@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import service.ClearAppService;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class ClearAppServiceTests {
     @Test
@@ -25,7 +26,7 @@ public class ClearAppServiceTests {
         new ClearAppService().clearAll();
         // and then check if the database is empty.
         Assertions.assertNull(auth1.getAuth(authToken1));
-        Assertions.assertEquals(game1.listGames(), new ArrayList<>());
+        Assertions.assertEquals(game1.listGames(), new HashSet<>());
         Assertions.assertNull(user1.getUser("username1"));
     }
 }

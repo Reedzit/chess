@@ -6,8 +6,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import requests.LoginRequest;
 import responses.*;
 
-import java.util.Objects;
-
 public class UserService {
     UserDAO userDAO = new DbUserDAO();
     AuthDAO authDAO =  new DbAuthDAO();

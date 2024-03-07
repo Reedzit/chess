@@ -4,7 +4,6 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryUserDAO;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import requests.LoginRequest;
@@ -59,7 +58,6 @@ public class UserServiceTests {
         UserData userData = new UserData("name", "password", "email");
         new MemoryUserDAO().createUser(userData);
         String authToken = new MemoryAuthDAO().createAuth("name");
-        EmptyResponse response = new UserService().logout(authToken);
         Assertions.assertNull(new MemoryAuthDAO().getAuth(authToken));
     }
     @Test

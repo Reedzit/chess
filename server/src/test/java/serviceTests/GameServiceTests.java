@@ -5,7 +5,6 @@ import dataAccess.*;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.context.support.GenericApplicationContextExtensionsKt;
 import responses.CreateGameResponse;
 import responses.EmptyResponse;
 import responses.GameListResponse;
@@ -13,7 +12,6 @@ import service.ClearAppService;
 import service.GameService;
 
 import java.util.HashSet;
-import java.util.List;
 
 public class GameServiceTests {
     @Test
@@ -79,7 +77,6 @@ public class GameServiceTests {
     @Test
     public void getGameListTestNeg() throws DataAccessException {
         new ClearAppService().clearAll();
-        String authToken = new MemoryAuthDAO().createAuth("username");
         GameListResponse response = new GameService().getGameList(null);
         Assertions.assertEquals("Error: unauthorized", response.message());
     }

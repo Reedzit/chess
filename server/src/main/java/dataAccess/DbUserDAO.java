@@ -30,7 +30,6 @@ public class DbUserDAO  implements UserDAO{
                 ps.setString(2, encodedPassword);
                 ps.setString(3, entry.email());
                 ps.executeUpdate();
-                ps.close();
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
