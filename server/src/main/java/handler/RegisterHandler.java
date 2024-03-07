@@ -1,7 +1,6 @@
 package handler;
 
 import com.google.gson.Gson;
-import model.AuthData;
 import model.UserData;
 import responses.RegisterResponse;
 import service.UserService;
