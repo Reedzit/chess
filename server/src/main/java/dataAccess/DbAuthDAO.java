@@ -36,7 +36,7 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public String getAuth(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.user WHERE token = '%s'", token);
+        var selectStatement = String.format("SELECT * FROM chess.auth WHERE token = '%s'", token);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
@@ -54,7 +54,7 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public String getUsername(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.user WHERE token = '%s'", token);
+        var selectStatement = String.format("SELECT * FROM chess.auth WHERE token = '%s'", token);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
