@@ -111,7 +111,27 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public void updateGame(GameData game) throws DataAccessException {
-
+        String gameName = game.gameName();
+        var updateStatement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameName = ?";
+        try (var conn = DatabaseManager.getConnection()){
+            try (var statement = conn.prepareStatement(updateStatement)){
+                if (game.whiteUsername() != null) {
+                    statement.setString(1, game.whiteUsername());
+                }else {
+                    statement.setNull(1,Types.VARCHAR);
+                }
+                if (game.blackUsername() != null) {
+                    statement.setString(2, game.blackUsername());
+                }else {
+                    statement.setNull(2,Types.VARCHAR);
+                }
+                statement.setString(3, new Gson().toJson(game.game()));
+                statement.setString(4, gameName);
+                statement.executeUpdate();
+            }
+        }catch (SQLException e){
+            throw new DataAccessException(e.getMessage());
+        }
     }
 
     public void configTable() throws DataAccessException {
