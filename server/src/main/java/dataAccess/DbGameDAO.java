@@ -4,16 +4,18 @@ import chess.ChessGame;
 import model.GameData;
 import com.google.gson.Gson;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.HashSet;
 
 public class DbGameDAO implements GameDAO {
     String initStatement = """
             CREATE TABLE IF NOT EXISTS  game (
               `gameID` int NOT NULL AUTO_INCREMENT,
-              `whiteUsername` varchar(256) NULL,
-              `blackUsername` varchar(256) NULL,
+              `whiteUsername` varchar(256),
+              `blackUsername` varchar(256),
               `gameName` varchar(256) NOT NULL,
-              `chessGame` varchar(256) NOT NULL,
+              `chessGame` TEXT NOT NULL,
               PRIMARY KEY (`gameID`),
               INDEX(gameID),
               INDEX(gameName)
@@ -25,19 +27,21 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public Integer createGame(String gameName) throws DataAccessException {
-        var insertStatement = "INSERT INTO game (whiteUsername, blackUsername, gameName, game) VALUES (?, ?, ?, ?)";
+        var insertStatement = "INSERT INTO game (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
         ChessGame chessGame = new ChessGame();
         var serializedGame = new Gson().toJson(chessGame);
         try (var conn = DatabaseManager.getConnection()){
-            try (var ps = conn.prepareStatement(insertStatement)) {
-                ps.setString(1, null);
-                ps.setString(2, null);
+            try (var ps = conn.prepareStatement(insertStatement, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setNull(1, Types.VARCHAR);
+                ps.setNull(2,Types.VARCHAR);
                 ps.setString(3, gameName);
                 ps.setString(4, serializedGame);
                 ps.executeUpdate();
                 var result = ps.getGeneratedKeys();
+                result.next();
                 int id = result.getInt(1);
                 ps.close();
+                System.out.println("This is the gameID for a created game: "+ id);
                 return id;
             }
         } catch (SQLException e) {
@@ -47,10 +51,11 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public GameData getGame(String gameName) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.game WHERE gameName = '%s'", gameName);
+        var selectStatement = "SELECT * FROM game WHERE gameName = ?";
         try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.createStatement()){
-                var result = statement.executeQuery(selectStatement);
+            try (var statement = conn.prepareStatement(selectStatement)){
+                statement.setString(1, gameName);
+                var result = statement.executeQuery();
                 if (result.next()){
                     GameData gameData = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), new Gson().fromJson(result.getString(5),ChessGame.class));
                     result.close();
@@ -86,16 +91,17 @@ public class DbGameDAO implements GameDAO {
     @Override
     public HashSet<GameData> listGames() throws DataAccessException {
         HashSet<GameData> gameList = new HashSet<>();
-        var selectStatement = "SELECT * FROM chess.game;";
+        var selectStatement = "SELECT * FROM game";
         try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.createStatement()){
-                var result = statement.executeQuery(selectStatement);
+            try (var statement = conn.prepareStatement(selectStatement)){
+                var result = statement.executeQuery();
                 while (result.next()){
                     GameData gameData = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), new Gson().fromJson(result.getString(5),ChessGame.class));
                     gameList.add(gameData);
-                    result.close();
-                    statement.close();
+
                 }
+                result.close();
+                statement.close();
                 return gameList;
             }
         }catch (SQLException e){
