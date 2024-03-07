@@ -13,22 +13,21 @@ public class UserService {
     public UserService() throws DataAccessException {
 
     }
-    public RegisterResponse register(UserData user){
+    public RegisterResponse register(UserData user) throws DataAccessException {
         RegisterResponse response;
-//        System.out.println(user);
         if (userDAO.getUser(user.username()) != null) {
             response = new RegisterResponse(null,null,"Error: already taken");
         }else if (user.username() == null || user.password() == null || user.email() == null){
             response = new RegisterResponse(null, null, "Error: bad request");
         }else{
             userDAO.createUser(user);
-            String authToken = new MemoryAuthDAO().createAuth(user.username());
+            String authToken = authDAO.createAuth(user.username());
             response = new RegisterResponse(user.username(), authToken, null);
         }
         return response;
     }
     public LoginResponse login(LoginRequest loginRequest) throws DataAccessException {
-        LoginResponse response = new LoginResponse(null,null,null);
+        LoginResponse response;
         UserData userData = userDAO.getUser(loginRequest.username());
         if (userDAO.getUser(loginRequest.username()) == null || !Objects.equals(userData.password(), loginRequest.password())){
             response = new LoginResponse(null, null, "Error: unauthorized");
@@ -40,9 +39,9 @@ public class UserService {
     }
     public EmptyResponse logout(String authToken){
         EmptyResponse response = new EmptyResponse(null);
-        String tempToken = new MemoryAuthDAO().getAuth(authToken);
+        String tempToken = authDAO.getAuth(authToken);
         if (tempToken != null){
-            new MemoryAuthDAO().deleteAuth(authToken);
+            authDAO.deleteAuth(authToken);
         }else{
             response = new EmptyResponse("Error: unauthorized");
         }

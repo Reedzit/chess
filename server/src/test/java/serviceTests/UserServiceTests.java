@@ -1,5 +1,6 @@
 package serviceTests;
 
+import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryUserDAO;
 import model.UserData;
@@ -16,14 +17,14 @@ import service.UserService;
 public class UserServiceTests {
 
     @Test
-    public void registerNegativeUserTest(){
+    public void registerNegativeUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData(null, "password", "email");
         RegisterResponse response = new UserService().register(userData);
         Assertions.assertEquals(response.message(), "Error: bad request");
     }
     @Test
-    public void registerPositiveUserTest(){
+    public void registerPositiveUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData("username", "password", "email");
         RegisterResponse response = new UserService().register(userData);
@@ -33,7 +34,7 @@ public class UserServiceTests {
     }
 
     @Test
-    public void loginPositiveUserTest(){
+    public void loginPositiveUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData("name", "password", "email");
         new MemoryUserDAO().createUser(userData);
@@ -44,7 +45,7 @@ public class UserServiceTests {
 
     }
     @Test
-    public void loginNegativeUserTest(){
+    public void loginNegativeUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData("name", "password", "email");
         new MemoryUserDAO().createUser(userData);
@@ -53,7 +54,7 @@ public class UserServiceTests {
         Assertions.assertEquals(response.message(), "Error: unauthorized");
     }
     @Test
-    public void logoutPositiveUserTest(){
+    public void logoutPositiveUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData("name", "password", "email");
         new MemoryUserDAO().createUser(userData);
@@ -62,7 +63,7 @@ public class UserServiceTests {
         Assertions.assertNull(new MemoryAuthDAO().getAuth(authToken));
     }
     @Test
-    public void logoutNegativeUserTest(){
+    public void logoutNegativeUserTest() throws DataAccessException {
         new ClearAppService().clearAll();
         UserData userData = new UserData("name", "password", "email");
         new MemoryUserDAO().createUser(userData);
