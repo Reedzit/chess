@@ -98,7 +98,6 @@ public class DbGameDAO implements GameDAO {
                 while (result.next()){
                     GameData gameData = new GameData(result.getInt(1), result.getString(2), result.getString(3), result.getString(4), new Gson().fromJson(result.getString(5),ChessGame.class));
                     gameList.add(gameData);
-
                 }
                 result.close();
                 statement.close();

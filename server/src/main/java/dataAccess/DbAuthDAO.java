@@ -59,7 +59,10 @@ public class DbAuthDAO implements AuthDAO{
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
                 if (result.next()){
-                    return result.getString(2);
+                    String username = result.getString(2);
+                    result.close();
+                    statement.close();
+                    return username;
                 }
                 return null;
             }

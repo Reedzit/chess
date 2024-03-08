@@ -5,7 +5,6 @@ import dataAccess.*;
 import model.GameData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import service.GameService;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;

@@ -30,6 +30,7 @@ public class DbUserDAO  implements UserDAO{
                 ps.setString(2, encodedPassword);
                 ps.setString(3, entry.email());
                 ps.executeUpdate();
+                //automatically closes connection
             }
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
@@ -46,7 +47,9 @@ public class DbUserDAO  implements UserDAO{
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
                 if (result.next()){
-                    return new UserData(result.getString(2), result.getString(3), result.getString(4));
+                    UserData newData = new UserData(result.getString(2), result.getString(3), result.getString(4));
+                    result.close();
+                    return newData;
                 }else {
                     return null;
                 }
