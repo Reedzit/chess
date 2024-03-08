@@ -11,15 +11,20 @@ import java.util.HashSet;
 public class ClearAppDbTest {
         @Test
     public void clearAppTest() throws DataAccessException {
-        // add things to database
         DbAuthDAO auth1 = new DbAuthDAO();
-        String authToken1 = auth1.createAuth("username1");
         DbGameDAO game1 = new DbGameDAO();
-        game1.createGame("game1");
         DbUserDAO user1 = new DbUserDAO();
+        auth1.clear();
+        game1.clear();
+        user1.clear();
+        // add things to database
+        String authToken1 = auth1.createAuth("username1");
+        game1.createGame("game1");
         user1.createUser(new UserData("username1", "password1", "email1"));
         // clear database
-        new ClearAppService().clearAll();
+        auth1.clear();
+        game1.clear();
+        user1.clear();
         // and then check if the database is empty.
         Assertions.assertNull(auth1.getAuth(authToken1));
         Assertions.assertEquals(game1.listGames(), new HashSet<>());

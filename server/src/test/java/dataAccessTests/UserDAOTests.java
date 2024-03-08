@@ -59,6 +59,8 @@ public class UserDAOTests {
     public void getUserTestNeg() throws DataAccessException, SQLException {
         userDAO.clear();
         authDAO.clear();
+        userDAO.createUser(new UserData("wrongUser", "password", "meh"));
+        userDAO.createUser(new UserData("meh", "muh", "mee"));
         Assertions.assertNull(userDAO.getUser("username"));
     }
 }
