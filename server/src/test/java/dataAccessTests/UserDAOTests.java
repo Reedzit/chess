@@ -23,7 +23,7 @@ public class UserDAOTests {
         UserData userData = new UserData("username","password","email");
         userDAO.createUser(userData);
         try(var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT * FROM chess.user WHERE username = ?")) {
+            try (var statement = conn.prepareStatement("SELECT * FROM UserData WHERE username = ?")) {
                 statement.setString(1, "username");
                 result = statement.executeQuery();
                 Assertions.assertTrue(result.next());
@@ -46,7 +46,7 @@ public class UserDAOTests {
         UserData userData = new UserData("username","password","email");
         userDAO.createUser(userData);
         try (var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT * FROM chess.user WHERE username = ?")) {
+            try (var statement = conn.prepareStatement("SELECT * FROM UserData WHERE username = ?")) {
                 statement.setString(1, "username");
                 result = statement.executeQuery();
                 result.next();

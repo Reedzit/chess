@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public class DbAuthDAO implements AuthDAO{
     String initStatement = """
-            CREATE TABLE IF NOT EXISTS  auth (
+            CREATE TABLE IF NOT EXISTS  AuthData (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `token` varchar(256) NOT NULL,
@@ -20,7 +20,7 @@ public class DbAuthDAO implements AuthDAO{
     @Override
     public String createAuth(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        String updateStatement = "INSERT INTO chess.auth (username, token) VALUES(?, ?);";
+        String updateStatement = "INSERT INTO AuthData (username, token) VALUES(?, ?);";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.prepareStatement(updateStatement)) {
                 statement.setString(1, username);
@@ -36,7 +36,7 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public String getAuth(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.auth WHERE token = '%s'", token);
+        var selectStatement = String.format("SELECT * FROM AuthData WHERE token = '%s'", token);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
@@ -54,7 +54,7 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public String getUsername(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.auth WHERE token = '%s'", token);
+        var selectStatement = String.format("SELECT * FROM AuthData WHERE token = '%s'", token);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
@@ -70,7 +70,7 @@ public class DbAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String token) throws DataAccessException {
-        String deleteStatement = String.format("DELETE FROM chess.auth WHERE token = '%s'", token);
+        String deleteStatement = String.format("DELETE FROM AuthData WHERE token = '%s'", token);
         try (var conn = DatabaseManager.getConnection()){
             try ( var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);
@@ -92,7 +92,7 @@ public class DbAuthDAO implements AuthDAO{
     }
     @Override
     public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE chess.auth;";
+        String deleteStatement = "TRUNCATE TABLE AuthData;";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);

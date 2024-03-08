@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 public class DbGameDAO implements GameDAO {
     String initStatement = """
-            CREATE TABLE IF NOT EXISTS  game (
+            CREATE TABLE IF NOT EXISTS  GameData (
               `gameID` int NOT NULL AUTO_INCREMENT,
               `whiteUsername` varchar(256),
               `blackUsername` varchar(256),
@@ -27,7 +27,7 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public Integer createGame(String gameName) throws DataAccessException {
-        var insertStatement = "INSERT INTO game (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
+        var insertStatement = "INSERT INTO GameData (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
         ChessGame chessGame = new ChessGame();
         var serializedGame = new Gson().toJson(chessGame);
         try (var conn = DatabaseManager.getConnection()){
@@ -51,7 +51,7 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public GameData getGame(String gameName) throws DataAccessException {
-        var selectStatement = "SELECT * FROM game WHERE gameName = ?";
+        var selectStatement = "SELECT * FROM GameData WHERE gameName = ?";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.prepareStatement(selectStatement)){
                 statement.setString(1, gameName);
@@ -71,7 +71,7 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public String getGameName(Integer gameID) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM chess.game WHERE gameID = '%s'", gameID);
+        var selectStatement = String.format("SELECT * FROM GameData WHERE gameID = '%s'", gameID);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
@@ -91,7 +91,7 @@ public class DbGameDAO implements GameDAO {
     @Override
     public HashSet<GameData> listGames() throws DataAccessException {
         HashSet<GameData> gameList = new HashSet<>();
-        var selectStatement = "SELECT * FROM game";
+        var selectStatement = "SELECT * FROM GameData";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.prepareStatement(selectStatement)){
                 var result = statement.executeQuery();
@@ -112,7 +112,7 @@ public class DbGameDAO implements GameDAO {
     @Override
     public void updateGame(GameData game) throws DataAccessException {
         String gameName = game.gameName();
-        var updateStatement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameName = ?";
+        var updateStatement = "UPDATE GameData SET whiteUsername = ?, blackUsername = ?, chessGame = ? WHERE gameName = ?";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.prepareStatement(updateStatement)){
                 if (game.whiteUsername() != null) {
@@ -148,7 +148,7 @@ public class DbGameDAO implements GameDAO {
 
     @Override
     public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE chess.game;";
+        String deleteStatement = "TRUNCATE TABLE GameData;";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);

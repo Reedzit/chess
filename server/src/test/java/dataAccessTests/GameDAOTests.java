@@ -24,7 +24,7 @@ public class GameDAOTests {
         ResultSet result;
         Integer gameID = gameDAO.createGame("gameName");
         try(var conn = DatabaseManager.getConnection()) {
-            try (var statement = conn.prepareStatement("SELECT * FROM chess.game WHERE gameID = ?")) {
+            try (var statement = conn.prepareStatement("SELECT * FROM GameData WHERE gameID = ?")) {
                 statement.setInt(1, gameID);
                 result = statement.executeQuery();
                 Assertions.assertTrue(result.next());
@@ -47,7 +47,7 @@ public class GameDAOTests {
         gameDAO.createGame("gameName");
         gameDAO.updateGame(new GameData(1,"username", null, "gameName", new ChessGame()));
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.game WHERE whiteUsername = ?")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM GameData WHERE whiteUsername = ?")) {
                 statement.setString(1, "username");
                 result = statement.executeQuery();
                 result.next();
@@ -65,7 +65,7 @@ public class GameDAOTests {
         gameDAO.createGame("gameName");
         gameDAO.updateGame(new GameData(1,null,null, "wrongGame", new ChessGame()));
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.game WHERE gameName = ?")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM GameData WHERE gameName = ?")) {
                 statement.setString(1, "wrongGame");
                 result = statement.executeQuery();
                 Assertions.assertFalse(result.next());

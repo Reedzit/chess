@@ -20,7 +20,7 @@ public class AuthDAOTests {
         authDAO.createAuth("username2");
         authDAO.createAuth("username3");
         var conn = DatabaseManager.getConnection();
-        var statement = conn.prepareStatement("SELECT * FROM chess.auth");
+        var statement = conn.prepareStatement("SELECT * FROM AuthData");
         var result = statement.executeQuery();
         int counter = 0;
         while(result.next()){
@@ -42,7 +42,7 @@ public class AuthDAOTests {
         String username;
         String token = authDAO.createAuth("username");
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.auth WHERE token = ?")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM AuthData WHERE token = ?")) {
                 statement.setString(1, token);
                 var result = statement.executeQuery();
                 result.next();
@@ -64,7 +64,7 @@ public class AuthDAOTests {
         String token2 = authDAO.createAuth("username");
         String check;
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.auth WHERE username = username")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM AuthData WHERE username = username")) {
                 var result = statement.executeQuery();
                 result.next();
                 check = result.getString(3);
@@ -81,7 +81,7 @@ public class AuthDAOTests {
         authDAO.deleteAuth(token1);
         String check;
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.auth WHERE username = username")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM AuthData WHERE username = username")) {
                 var result = statement.executeQuery();
                 result.next();
                 check = result.getString(3);
@@ -96,7 +96,7 @@ public class AuthDAOTests {
         String username;
         String token = authDAO.createAuth("username");
         try(var conn = DatabaseManager.getConnection()){
-            try(var statement = conn.prepareStatement("SELECT * FROM chess.auth WHERE token = ?")) {
+            try(var statement = conn.prepareStatement("SELECT * FROM AuthData WHERE token = ?")) {
                 statement.setString(1, token);
                 var result = statement.executeQuery();
                 result.next();

@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 public class DbUserDAO  implements UserDAO{
     String initStatement = """
-            CREATE TABLE IF NOT EXISTS  user (
+            CREATE TABLE IF NOT EXISTS  UserData (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
@@ -22,7 +22,7 @@ public class DbUserDAO  implements UserDAO{
     }
     @Override
     public void createUser(UserData entry) throws DataAccessException {
-        var insertStatement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
+        var insertStatement = "INSERT INTO UserData (username, password, email) VALUES (?, ?, ?)";
         var encodedPassword = encodePassword(entry.password());
         try (var conn = DatabaseManager.getConnection()){
             try (var ps = conn.prepareStatement(insertStatement)) {
@@ -40,7 +40,7 @@ public class DbUserDAO  implements UserDAO{
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM user WHERE username = '%s'", username);
+        var selectStatement = String.format("SELECT * FROM UserData WHERE username = '%s'", username);
         System.out.println("DOEs it get here?" + selectStatement);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
@@ -69,7 +69,7 @@ public class DbUserDAO  implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE chess.user;";
+        String deleteStatement = "TRUNCATE TABLE chess.UserData;";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);
