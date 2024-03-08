@@ -72,7 +72,7 @@ public class DbUserDAO  implements UserDAO{
 
     @Override
     public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE chess.UserData;";
+        String deleteStatement = "TRUNCATE TABLE UserData;";
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 statement.executeUpdate(deleteStatement);
