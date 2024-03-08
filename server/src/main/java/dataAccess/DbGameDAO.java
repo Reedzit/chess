@@ -127,6 +127,7 @@ public class DbGameDAO implements GameDAO {
                 }
                 statement.setString(3, new Gson().toJson(game.game()));
                 statement.setString(4, gameName);
+                System.out.println("This is the update statement for a game: " + statement);
                 statement.executeUpdate();
             }
         }catch (SQLException e){

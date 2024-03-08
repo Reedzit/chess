@@ -36,7 +36,7 @@ public class DbUserDAO  implements UserDAO{
         }
     }
 
-    public String encodePassword(String password){ return new BCryptPasswordEncoder().encode(password);}
+    String encodePassword(String password){ return new BCryptPasswordEncoder().encode(password);}
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
@@ -56,7 +56,7 @@ public class DbUserDAO  implements UserDAO{
         }
     }
 
-    public void configTable() throws DataAccessException {
+    private void configTable() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()){
             try (var preparedStatement = conn.prepareStatement(initStatement)){

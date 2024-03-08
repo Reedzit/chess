@@ -1,9 +1,6 @@
 package serviceTests;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -14,11 +11,11 @@ public class ClearAppServiceTests {
     @Test
     public void clearAppTest() throws DataAccessException {
         // add things to database
-        MemoryAuthDAO auth1 = new MemoryAuthDAO();
+        AuthDAO auth1 = new DbAuthDAO();
         String authToken1 = auth1.createAuth("username1");
-        MemoryGameDAO game1 = new MemoryGameDAO();
+        GameDAO game1 = new DbGameDAO();
         game1.createGame("game1");
-        MemoryUserDAO user1 = new MemoryUserDAO();
+        UserDAO user1 = new DbUserDAO();
         user1.createUser(new UserData("username1", "password1", "email1"));
         // clear database
         new ClearAppService().clearAll();

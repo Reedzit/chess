@@ -59,7 +59,7 @@ public class DbAuthDAO implements AuthDAO{
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
                 if (result.next()){
-                    return result.getString(1);
+                    return result.getString(2);
                 }
                 return null;
             }
@@ -80,7 +80,7 @@ public class DbAuthDAO implements AuthDAO{
         }
     }
 
-    public void configTable() throws DataAccessException {
+    void configTable() throws DataAccessException {
         DatabaseManager.createDatabase();
         try (var conn = DatabaseManager.getConnection()){
             try (var preparedStatement = conn.prepareStatement(initStatement)){
