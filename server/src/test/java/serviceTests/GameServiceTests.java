@@ -14,18 +14,22 @@ import service.GameService;
 import java.util.HashSet;
 
 public class GameServiceTests {
+    AuthDAO authDAO = new DbAuthDAO();
+    GameDAO gameDAO = new DbGameDAO();
+
+    public GameServiceTests() throws DataAccessException {
+    }
+
     @Test
     public void createGameTestPos() throws DataAccessException {
         new ClearAppService();
-        AuthDAO authDAO = new MemoryAuthDAO();
         String authToken = authDAO.createAuth("username");
         CreateGameResponse response = new GameService().createGame("gameName",authToken);
-        Assertions.assertEquals(response.gameID(), new MemoryGameDAO().getGame("gameName").gameID());
+        Assertions.assertEquals(response.gameID(), gameDAO.getGame("gameName").gameID());
     }
     @Test
     public void createGameTestNeg() throws DataAccessException {
         new ClearAppService();
-        AuthDAO authDAO = new MemoryAuthDAO();
         String authToken = authDAO.createAuth("username");
         CreateGameResponse response = new GameService().createGame(null,authToken);
         Assertions.assertEquals(response.message(), "Error: bad request");
@@ -34,8 +38,6 @@ public class GameServiceTests {
     @Test
     public void joinGameTestPos() throws DataAccessException {
         new ClearAppService();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
         String blackToken = authDAO.createAuth("blackUsername");
         String whiteToken = authDAO.createAuth("whiteUsername");
         Integer gameID = gameDAO.createGame("gameName");
@@ -47,8 +49,6 @@ public class GameServiceTests {
     @Test
     public void joinGameTestNeg() throws DataAccessException {
         new ClearAppService();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
         String blackToken = authDAO.createAuth("blackUsername");
         String anotherBlackToken = authDAO.createAuth("anotherBlackUsername");
         Integer gameID = gameDAO.createGame("gameName");
@@ -61,14 +61,12 @@ public class GameServiceTests {
     @Test
     public void getGameListTestPos() throws DataAccessException {
         new ClearAppService().clearAll();
-        AuthDAO authDAO = new MemoryAuthDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
         String authToken = authDAO.createAuth("username");
         gameDAO.createGame("gameName1");
         gameDAO.createGame("gameName2");
         gameDAO.createGame("gameName3");
         HashSet<GameData> gameList = new HashSet<>();
-                gameList.add( gameDAO.getGame("gameName1"));
+                gameList.add(gameDAO.getGame("gameName1"));
                 gameList.add(gameDAO.getGame("gameName2"));
                 gameList.add(gameDAO.getGame("gameName3"));
         GameListResponse response = new GameService().getGameList(authToken);
