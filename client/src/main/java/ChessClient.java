@@ -4,17 +4,16 @@ import java.util.Arrays;
 
 
 public class ChessClient {
+    private String currentUser = null;
     private final ServerFacade server;
     private final String serverUrl;
     private State state = State.SIGNEDOUT;
 
-    public ChessClient(String serverUrl, Repl ) {
+    public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
     }
-    public String signIn(String[] stuff){
-        state = State.SIGNEDIN;
-    }
+
     public String eval(String input) {
         try {
             var tokens = input.toLowerCase().split(" ");
@@ -36,7 +35,7 @@ public class ChessClient {
                      case "observe" -> observeGame(params);
                      case
                      default -> help();
-                 }
+                 };
             }
 
         } catch (ResponseException ex) {
@@ -48,6 +47,24 @@ public class ChessClient {
     }
 
     public String signIn(String ... params){
+        state = State.SIGNEDIN;
+        currentUser = params[0];
+        server.login(params);
+        return String.format("You are logged in as %s", currentUser);
+    }
+    public String register(String ... params){
+
+    }
+    public String createGame(String ... params){
+
+    }
+    public String listGames(String ... params){
+
+    }
+    public String joinGame(String ... params){
+
+    }
+    public String observeGame(String ... params){
 
     }
     public String help(){

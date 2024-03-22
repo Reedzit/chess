@@ -3,10 +3,10 @@
 import chess.ChessGame;
 import com.google.gson.Gson;
 import model.GameData;
+import requests.LoginRequest;
 
 import java.io.*;
 import java.net.*;
-import java.util.HashSet;
 
 public class ServerFacade {
 
@@ -17,9 +17,9 @@ public class ServerFacade {
     }
 
 
-    public Pet login(Pet pet) throws ResponseException {
-        var path = "/pet";
-        return this.makeRequest("POST", path, pet, Pet.class);
+    public String login(String[] params) {
+        var path = "/session";
+        return this.makeRequest("POST", path, params, String.class);
     }
 
     public void logout(int id) throws ResponseException {
