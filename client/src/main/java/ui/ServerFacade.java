@@ -8,6 +8,7 @@ import model.UserData;
 import requests.CreateGameRequest;
 import requests.JoinGameRequest;
 import requests.LoginRequest;
+import responses.CreateGameResponse;
 import responses.GameListResponse;
 import responses.LoginResponse;
 import responses.RegisterResponse;
@@ -20,7 +21,7 @@ import java.util.Objects;
 public class ServerFacade {
 
     private final String serverUrl;
-    private String authToken = null;
+    public String authToken = null;
 
     public ServerFacade(String url) {
         this.serverUrl = url;
@@ -41,7 +42,8 @@ public class ServerFacade {
 
     public void logout() throws ResponseException {
         var path = "/session";
-        this.makeRequest("DELETE", path, null, String.class);
+        this.makeRequest("DELETE", path, null, null);
+        authToken = null;
     }
 
     public HashSet<GameData> listGames() throws ResponseException {
@@ -50,9 +52,9 @@ public class ServerFacade {
         return response.games();
     }
 
-    public void createGame(String gameName) throws ResponseException {
+    public CreateGameResponse createGame(String gameName) throws ResponseException {
         var path = "/game";
-        this.makeRequest("GET", path, new CreateGameRequest(gameName), String.class);
+        return this.makeRequest("GET", path, new CreateGameRequest(gameName), CreateGameResponse.class);
     }
     public void joinGame(String[] params) throws ResponseException {
         var path =  "/game";
