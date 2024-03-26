@@ -31,9 +31,13 @@ public class ServerFacadeTests {
     public static void init() throws DataAccessException {
         server = new Server();
         var port = server.run(0);
-        new ClearAppService().clearAll();
         facade = new ServerFacade(String.format("http://localhost:%s", port));
         System.out.println("Started test HTTP server on " + port);
+    }
+
+    @BeforeEach
+    public void setup() throws DataAccessException {
+        new ClearAppService().clearAll();
     }
 
     @AfterAll
@@ -99,6 +103,7 @@ public class ServerFacadeTests {
     }
     @Test
     void createGamePos() throws Exception {
+
         new UserService().register(new UserData("username", "password", "emial"));
         LoginResponse response = new UserService().login(new LoginRequest("username", "password"));
         facade.authToken = response.authToken();
