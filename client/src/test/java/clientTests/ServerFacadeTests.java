@@ -18,6 +18,7 @@ import service.UserService;
 import ui.ServerFacade;
 
 import java.util.HashSet;
+import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -108,19 +109,31 @@ public class ServerFacadeTests {
     }
     @Test
     void createGameNeg() throws Exception {
-
+        facade.authToken = null;
+        Assertions.assertThrows(ResponseException.class, () -> facade.createGame("gameName"));
     }
     @Test
     void joinGamePos() throws Exception {
-
+        new UserService().register(new UserData("username", "password", "emial"));
+        LoginResponse response = new UserService().login(new LoginRequest("username", "password"));
+        GameService gameService = new GameService();
+        gameService.createGame("game", response.authToken());
+        facade.authToken = response.authToken();
+        facade.joinGame(new String[] {"WHITE", "1"});
+        Assertions.assertEquals("username", new DbGameDAO().getGame("game").whiteUsername());
     }
     @Test
     void joinGameNeg() throws Exception {
-
+        Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(new String[] {"username",  "12"}));
     }
     @Test
     void observeGamePos() throws  Exception {
-
+        new UserService().register(new UserData("username", "password", "emial"));
+        LoginResponse response = new UserService().login(new LoginRequest("username", "password"));
+        GameService gameService = new GameService();
+        gameService.createGame("game", response.authToken());
+        facade.authToken = response.authToken();
+        facade.observeGame(new String[] {""});
     }
     @Test
     void observeGameNeg() throws Exception {

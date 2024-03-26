@@ -7,11 +7,9 @@ import java.util.Arrays;
 
 public class PostLoginUI {
     private static ServerFacade server;
-    private final String serverUrl;
 
     public PostLoginUI(String serverURL) {
         server = new ServerFacade(serverURL);
-        this.serverUrl = serverURL;
     }
     public static String eval(String input) throws ResponseException {
         var tokens = input.toLowerCase().split(" ");
@@ -20,10 +18,10 @@ public class PostLoginUI {
 
         return switch (cmd) {
             case "create" -> createGame(params);
-            case "list" -> listGames(params);
+            case "list" -> listGames();
             case "join" -> joinGame(params);
             case "observe" -> observeGame(params);
-            case "logout" -> "logout";
+            case "logout" -> logout();
             case "quit" -> "quit";
             default -> help();
         };
@@ -44,7 +42,7 @@ public class PostLoginUI {
         server.createGame(params[0]);
         return String.format("You have created the game '%s'.", params[0]);
     }
-    public static String listGames(String... params) throws ResponseException {
+    public static String listGames() throws ResponseException {
         var games = server.listGames();
         var result = new StringBuilder();
         var gson = new Gson();
@@ -59,10 +57,11 @@ public class PostLoginUI {
     }
     public static String observeGame(String... params) throws ResponseException {
         server.observeGame(params);
-        return String.format("You are observing the game '%s'.", params[0]);
+        return String.format("You are observing the game '%s'.", Integer.parseInt(params[0]));
     }
-    public void logout() throws ResponseException {
+    public static String logout() throws ResponseException {
         Repl.state = Repl.State.SIGNEDOUT;
         server.logout();
+        return "You have logged out.";
     }
 }

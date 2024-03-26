@@ -59,9 +59,9 @@ public class ServerFacade {
     public void joinGame(String[] params) throws ResponseException {
         var path =  "/game";
         if (Objects.equals(params[0], "WHITE")){
-            this.makeRequest("PUT", path, new JoinGameRequest(ChessGame.TeamColor.WHITE, Integer.parseInt(params[1])), String.class);
+            this.makeRequest("PUT", path, new JoinGameRequest(ChessGame.TeamColor.WHITE, Integer.parseInt(params[1])), null);
         }else {
-            this.makeRequest("PUT", path, new JoinGameRequest(ChessGame.TeamColor.BLACK, Integer.parseInt(params[1])), String.class);
+            this.makeRequest("PUT", path, new JoinGameRequest(ChessGame.TeamColor.BLACK, Integer.parseInt(params[1])), null);
         }
     }
 
