@@ -76,7 +76,8 @@ public class ServerFacadeTests {
         Assertions.assertNull(facade.authToken);
     }
     @Test
-    void logoutNeg() {
+    void logoutNeg() throws DataAccessException {
+        new ClearAppService().clearAll();
         Assertions.assertThrows(ResponseException.class, () -> facade.logout());
     }
     @Test
