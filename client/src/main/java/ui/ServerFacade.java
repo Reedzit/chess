@@ -67,7 +67,7 @@ public class ServerFacade {
 
     public void observeGame(String ... params) throws ResponseException {
         var path =  "/game";
-        this.makeRequest("PUT",path, new JoinGameRequest(null, Integer.parseInt(params[1])), String.class);
+        this.makeRequest("PUT",path, new JoinGameRequest(null, Integer.parseInt(params[0])), null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {

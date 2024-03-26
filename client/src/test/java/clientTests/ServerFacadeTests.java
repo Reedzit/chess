@@ -27,7 +27,7 @@ public class ServerFacadeTests {
 
     private static Server server;
     private static ServerFacade facade;
-    public ServerFacadeTests() throws DataAccessException {
+    public ServerFacadeTests() {
     }
 
     @BeforeAll
@@ -56,7 +56,7 @@ public class ServerFacadeTests {
         assertTrue(authData.authToken().length() > 10);
     }
     @Test
-    void registerNeg() throws Exception {
+    void registerNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.register(new String[] {"player1", "password", null}));
     }
     @Test
@@ -66,7 +66,7 @@ public class ServerFacadeTests {
         Assertions.assertNull(response.message());
     }
     @Test
-    void loginNeg() throws Exception {
+    void loginNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.login(new String[]{"notvalidusername", "password"}));
     }
     @Test
@@ -79,7 +79,7 @@ public class ServerFacadeTests {
         Assertions.assertNull(facade.authToken);
     }
     @Test
-    void logoutNeg() throws Exception {
+    void logoutNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.logout());
     }
     @Test
@@ -96,19 +96,18 @@ public class ServerFacadeTests {
         Assertions.assertEquals(gamesComparer, games);
     }
     @Test
-    void listGamesNeg() throws Exception {
+    void listGamesNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.listGames());
     }
     @Test
     void createGamePos() throws Exception {
         new UserService().register(new UserData("username", "password", "emial"));
         LoginResponse response = new UserService().login(new LoginRequest("username", "password"));
-        GameService gameService = new GameService();
         facade.authToken = response.authToken();
         Assertions.assertEquals(new CreateGameResponse(1, null), facade.createGame("gameName"));
     }
     @Test
-    void createGameNeg() throws Exception {
+    void createGameNeg() {
         facade.authToken = null;
         Assertions.assertThrows(ResponseException.class, () -> facade.createGame("gameName"));
     }
@@ -123,7 +122,7 @@ public class ServerFacadeTests {
         Assertions.assertEquals("username", new DbGameDAO().getGame("game").whiteUsername());
     }
     @Test
-    void joinGameNeg() throws Exception {
+    void joinGameNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.joinGame(new String[] {"username",  "12"}));
     }
     @Test
@@ -133,10 +132,12 @@ public class ServerFacadeTests {
         GameService gameService = new GameService();
         gameService.createGame("game", response.authToken());
         facade.authToken = response.authToken();
-        facade.observeGame(new String[] {""});
+        facade.observeGame("1");
+        Assertions.assertNull(new DbGameDAO().getGame("game").blackUsername());
+        Assertions.assertNull(new DbGameDAO().getGame("game").whiteUsername());
     }
     @Test
     void observeGameNeg() throws Exception {
-
+        Assertions.assertThrows(ResponseException.class, () -> facade.observeGame("12"));
     }
 }
