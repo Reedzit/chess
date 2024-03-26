@@ -1,9 +1,7 @@
 package clientTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.DbAuthDAO;
 import dataAccess.DbGameDAO;
-import dataAccess.DbUserDAO;
 import exception.ResponseException;
 import model.GameData;
 import model.UserData;
@@ -18,7 +16,6 @@ import service.UserService;
 import ui.ServerFacade;
 
 import java.util.HashSet;
-import java.util.Objects;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -137,7 +134,7 @@ public class ServerFacadeTests {
         Assertions.assertNull(new DbGameDAO().getGame("game").whiteUsername());
     }
     @Test
-    void observeGameNeg() throws Exception {
+    void observeGameNeg() {
         Assertions.assertThrows(ResponseException.class, () -> facade.observeGame("12"));
     }
 }
