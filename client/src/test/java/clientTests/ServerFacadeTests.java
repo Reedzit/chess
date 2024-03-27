@@ -28,7 +28,7 @@ public class ServerFacadeTests {
     }
 
     @BeforeAll
-    public static void init() throws DataAccessException {
+    public static void init() {
         server = new Server();
         var port = server.run(0);
         facade = new ServerFacade(String.format("http://localhost:%s", port));

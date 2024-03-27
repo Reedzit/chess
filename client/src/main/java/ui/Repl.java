@@ -14,11 +14,11 @@ public class Repl {
 
     public Repl(String serverUrl){
         preLoginUI = new PreLoginUI(serverUrl); // will add this as a param after ws is implemented
-        postLoginUI = new PostLoginUI(serverUrl);
+        postLoginUI = new PostLoginUI(PreLoginUI.server);
     }
 
-    public void run() throws ResponseException {
-        System.out.println("\uD83D\uDC36 Welcome to Chess. Type help to begin.");
+    public void run() {
+        System.out.println(" ♛  Welcome to Chess. Type help to begin.");
         System.out.println(PreLoginUI.help());
 
         Scanner scanner = new Scanner(System.in);
