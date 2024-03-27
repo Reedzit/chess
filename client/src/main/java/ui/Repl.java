@@ -2,18 +2,13 @@ package ui;
 
 import java.util.Scanner;
 
-import exception.ResponseException;
-import ui.EscapeSequences;
-import ui.PostLoginUI;
-import ui.PreLoginUI;
-
 public class Repl {
     private final PreLoginUI preLoginUI;
     private final PostLoginUI postLoginUI;
     public static State state = State.SIGNEDOUT;
 
     public Repl(String serverUrl){
-        preLoginUI = new PreLoginUI(serverUrl); // will add this as a param after ws is implemented
+        preLoginUI = new PreLoginUI(serverUrl);
         postLoginUI = new PostLoginUI(PreLoginUI.server);
     }
 
