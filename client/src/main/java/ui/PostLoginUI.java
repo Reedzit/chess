@@ -62,6 +62,7 @@ public class PostLoginUI {
             return "Expected: <ID> [WHITE|BLACK|<empty>] ";
         }
         server.joinGame(params);
+        //call websocket facade join game
         BoardPrinter.main(new String[]{});
         return String.format("You have joined the game %s. \n", params[0]);
     }
