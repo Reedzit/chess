@@ -1,11 +1,13 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocket.WebSocketFacade;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class PostLoginUI {
     public ServerFacade server;
@@ -72,6 +74,12 @@ public class PostLoginUI {
         //call websocket facade join game
         Repl.gameplayUI.gameID = Integer.parseInt(params[0]);
         Repl.gameplayUI.authToken = server.authToken;
+        if (Objects.equals(params[1], "WHITE")) {
+            Repl.gameplayUI.playerColor = ChessGame.TeamColor.WHITE;
+        }else {
+            Repl.gameplayUI.playerColor = ChessGame.TeamColor.BLACK;
+        }
+        Repl.gameplayUI.joinPlayer();
         return String.format("You have joined the game %s. \n", params[0]);
     }
     public String observeGame(String... params) throws ResponseException {
@@ -80,6 +88,10 @@ public class PostLoginUI {
         }
         server.observeGame(params);
         Repl.state = Repl.State.GAMEPLAY;
+        Repl.gameplayUI.gameID = Integer.parseInt(params[0]);
+        Repl.gameplayUI.authToken = server.authToken;
+        Repl.gameplayUI.playerColor = null;
+        Repl.gameplayUI.joinObserver();
         BoardPrinter.main(new String[]{});
         return String.format("You are observing the game %s. \n", Integer.parseInt(params[0]));
     }

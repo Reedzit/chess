@@ -14,10 +14,7 @@ import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.LeaveCommand;
-import webSocketMessages.userCommands.MakeMoveCommand;
-import webSocketMessages.userCommands.ResignCommand;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 public class WebSocketFacade {
     Session session;
@@ -64,11 +61,14 @@ public class WebSocketFacade {
             throw new ResponseException(500, ex.getMessage());
         }
     }
-    public void joinPlayer(Integer gameID) {
+    public void joinPlayer(Integer gameID, String authToken, ChessGame.TeamColor playerColor) throws Exception {
+        JoinPlayerCommand command = new JoinPlayerCommand(authToken,gameID, playerColor);
+        this.send(new Gson().toJson(command));
 
     }
-    public void joinObserver(Integer gameID) {
-
+    public void joinObserver(Integer gameID, String authToken) throws Exception {
+        JoinObserverCommand command = new JoinObserverCommand(authToken,gameID);
+        this.send(new Gson().toJson(command));
     }
     public void leave(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws Exception {
         LeaveCommand command = new LeaveCommand(authToken, gameID, playerColor);

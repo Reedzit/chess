@@ -73,6 +73,13 @@ public class GameplayUI implements NotificationHandler {
                 """;
     }
 
+    public void joinPlayer() {
+        ws.joinPlayer(gameID, authToken, playerColor);
+    }
+    public void joinObserver() {
+        ws.joinObserver(gameID, authToken);
+    }
+
 
     public String redrawBoard(){
         return BoardPrinter.printChessboard(currentGame);

@@ -1,6 +1,8 @@
 package server.websocket;
 
+import exception.InvalidGameIDException;
 import org.eclipse.jetty.websocket.api.Session;
+import server.Server;
 import webSocketMessages.serverMessages.*;
 
 import java.io.IOException;
@@ -24,10 +26,13 @@ public class ConnectionManager {
         list.removeIf(connection -> connection.getAuthToken().equals(authToken));
 
     }
-    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg) throws IOException {
+    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg) throws IOException, InvalidGameIDException {
         var removeList = new ArrayList<Connection>();
+        if (!connections.containsKey(gameID)){
+            throw new InvalidGameIDException("Error: Invalid gameID. Please choose a valid gameID");
+        }
+        var list = connections.get(gameID);
         if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
-            var list = connections.get(gameID);
             for (var connection : list) {
                 if (!connection.getSession().isOpen()) {
                     removeList.add(connection);
@@ -41,7 +46,6 @@ public class ConnectionManager {
                 list.removeIf(c -> c.getAuthToken().equals(remove.getAuthToken()));
             }
         } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
-            var list = connections.get(gameID);
             for (var connection : list) {
                 if (connection.getAuthToken().equals(excludeAuthToken)){
                     connection.send(msg);
@@ -49,10 +53,24 @@ public class ConnectionManager {
                 }
             }
         } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            var list = connections.get(gameID);
             for (var connection : list) {
+                if (connection.getAuthToken().equals(excludeAuthToken)){ continue;}
                 connection.send(msg);
             }
+        }
+    }
+    public void broadcastAll(Integer gameID, ServerMessage msg) throws IOException {
+        for (var connection : connections.get(gameID)){
+            connection.send(msg);
+        }
+    }
+    public void broadcastToOne(Integer gameID, String authToken, ServerMessage msg) throws IOException {
+        for (var connection : connections.get(gameID)){
+            if(connection.getAuthToken().equals(authToken)){
+                connection.send(msg);
+                return;
+            }
+
         }
     }
 }
