@@ -41,7 +41,7 @@ public class DbGameDAO implements GameDAO {
                 result.next();
                 int id = result.getInt(1);
                 ps.close();
-                System.out.println("This is the gameID for a created game: "+ id);
+//                System.out.println("This is the gameID for a created game: "+ id);
                 return id;
             }
         } catch (SQLException e) {
@@ -126,7 +126,7 @@ public class DbGameDAO implements GameDAO {
                 }
                 statement.setString(3, new Gson().toJson(game.game()));
                 statement.setString(4, gameName);
-                System.out.println("This is the update statement for a game: " + statement);
+//                System.out.println("This is the update statement for a game: " + statement);
                 statement.executeUpdate();
             }
         }catch (SQLException e){

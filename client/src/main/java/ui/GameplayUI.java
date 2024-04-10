@@ -6,6 +6,7 @@ import chess.ChessPosition;
 import exception.ResponseException;
 import webSocket.NotificationHandler;
 import webSocket.WebSocketFacade;
+import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -26,9 +27,9 @@ public class GameplayUI implements NotificationHandler {
     @Override
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
-            case LOAD_GAME -> loadGame(message);
-            case ERROR -> sendInvalid(message);
-            case NOTIFICATION -> broadcast(message);
+            case LOAD_GAME -> loadGame((LoadGameMessage) message);
+            case ERROR -> sendError((ErrorMessage)message);
+            case NOTIFICATION -> broadcast((NotificationMessage) message);
 
         }
     }
@@ -111,5 +112,9 @@ public class GameplayUI implements NotificationHandler {
     }
     public void broadcast(NotificationMessage msg){
         System.out.println(msg.getMessage());
+    }
+
+    public void sendError(ErrorMessage msg){
+        System.out.println(msg.getErrorMessage());
     }
 }

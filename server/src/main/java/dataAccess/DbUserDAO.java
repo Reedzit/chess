@@ -42,7 +42,7 @@ public class DbUserDAO  implements UserDAO{
     @Override
     public UserData getUser(String username) throws DataAccessException {
         var selectStatement = String.format("SELECT * FROM UserData WHERE username = '%s'", username);
-        System.out.println("DOEs it get here?" + selectStatement);
+//        System.out.println("DOEs it get here?" + selectStatement);
         try (var conn = DatabaseManager.getConnection()){
             try (var statement = conn.createStatement()){
                 var result = statement.executeQuery(selectStatement);
