@@ -12,7 +12,6 @@ import webSocketMessages.userCommands.UserGameCommand;
 
 public class WebSocketFacade {
     Session session;
-    Integer gameID;
     NotificationHandler notificationHandler;
     public WebSocketFacade (String url, NotificationHandler notificationHandler) throws ResponseException {
         try {

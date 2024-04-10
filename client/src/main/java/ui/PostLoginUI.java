@@ -1,5 +1,6 @@
 package ui;
 
+import chess.ChessBoard;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocket.WebSocketFacade;
@@ -69,7 +70,7 @@ public class PostLoginUI {
         Repl.state = Repl.State.GAMEPLAY;
 
         //call websocket facade join game
-        BoardPrinter.main(new String[]{});
+
         return String.format("You have joined the game %s. \n", params[0]);
     }
     public String observeGame(String... params) throws ResponseException {

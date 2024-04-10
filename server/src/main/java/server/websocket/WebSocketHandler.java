@@ -35,7 +35,7 @@ public class WebSocketHandler {
         try {
             connections.add();
             var username = new DbAuthDAO().getUsername(authToken);
-            var teamColor =
+            var teamColor = ChessGame.TeamColor.WHITE;
                     var message = String.format("%s has joined the game", username);
             var serverMessage = new ServerMessage(ServerMessage.Type.Notification, message);
             connections.broadcast(authToken, serverMessage);

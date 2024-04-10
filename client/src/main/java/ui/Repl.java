@@ -15,7 +15,7 @@ public class Repl {
     public Repl(String serverUrl) throws ResponseException {
         preLoginUI = new PreLoginUI(serverUrl);
         postLoginUI = new PostLoginUI(PreLoginUI.server, serverUrl);
-        gameplayUI = new GameplayUI();
+        gameplayUI = new GameplayUI(serverUrl);
     }
 
     public void run() {
@@ -34,10 +34,14 @@ public class Repl {
                 result = PreLoginUI.eval(line);
                 System.out.print(result);
             }else {
-                result = gameplayUI.eval();
-                gameplayUI.joinGame()
+                if (gameplayUI.gameID == null) {
+                    gameplayUI.joinGame();
+                }
+                result = gameplayUI.eval(line);
+
+                System.out.println(result);
             }
-            //implement state.gameplay
+
         }
     }
 

@@ -10,10 +10,10 @@ public class BoardPrinter {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
 //        System.out.println(board);
-        printChessboard(board);
+        System.out.println(printChessboard(board));
     }
 
-    public static void printChessboard(ChessBoard board) {
+    public static String printChessboard(ChessBoard board) {
         StringBuilder boardString = new StringBuilder();
         boolean isWhite = true;
         for (int i = 1; i < 9; i++) {
@@ -115,7 +115,7 @@ public class BoardPrinter {
                 isWhite = true;
             }
         }
-        System.out.println(boardString);
+        return boardString.toString();
     }
 }
 
