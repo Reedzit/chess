@@ -19,7 +19,11 @@ public class Connection {
     public Session getSession() {
         return session;
     }
-    public void send(ServerMessage msg) throws IOException {
-        session.getRemote().sendString(new Gson().toJson(msg));
+    public void send(ServerMessage msg) {
+        try {
+            session.getRemote().sendString(new Gson().toJson(msg));
+        }catch (IOException ex){
+            System.out.printf("Error: unable to make connection. this is the error message: %s", ex.getMessage());
+        }
     }
 }
