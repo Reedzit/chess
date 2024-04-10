@@ -12,8 +12,9 @@ import webSocketMessages.userCommands.UserGameCommand;
 
 public class WebSocketFacade {
     Session session;
-
-    public WebSocketFacade (String url, ) throws ResponseException {
+    Integer gameID;
+    NotificationHandler notificationHandler;
+    public WebSocketFacade (String url, NotificationHandler notificationHandler) throws ResponseException {
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -24,17 +25,34 @@ public class WebSocketFacade {
                 @Override
                         public void onMessage(String msg) {
                     ServerMessage serverMessage = new Gson().fromJson(msg, ServerMessage.class);
-                    notificationHandler.notify(notification);
+                    notificationHandler.notify(serverMessage);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
+    public void send(String msg) throws Exception {
+        this.session.getBasicRemote().sendText(msg); // call this after every method
+    }
+
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
 
     }
-    public void onMove()
+    public void makeMove() throws ResponseException {
+        try{
+            var moveCommand = new MakeMoveCommand();
+
+        } catch (Exception ex){
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+    public void joinPlayer(Integer gameID) {
+
+    }
+    public void joinObserver(Integer gameID) {
+
+    }
 }

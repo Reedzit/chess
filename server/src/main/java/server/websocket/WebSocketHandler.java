@@ -32,12 +32,16 @@ public class WebSocketHandler {
         }
     }
     private void joinPlayer(Integer gameID, ChessGame.TeamColor playerColor, Session session) throws IOException, DataAccessException {
-        connections.add(command.,session);
-        var username = new DbAuthDAO().getUsername(authToken);
-        var teamColor =
-        var message = String.format("%s has joined the game", username);
-        var serverMessage = new ServerMessage(ServerMessage.Type.Notification, message);
-        connections.broadcast(authToken, serverMessage);
+        try {
+            connections.add();
+            var username = new DbAuthDAO().getUsername(authToken);
+            var teamColor =
+                    var message = String.format("%s has joined the game", username);
+            var serverMessage = new ServerMessage(ServerMessage.Type.Notification, message);
+            connections.broadcast(authToken, serverMessage);
+        } catch (DataAccessException | IOException ex){
+
+        }
     }
     private void joinObserver(Integer gameID, Session session) throws IOException, DataAccessException {
         connections.add(authToken,session);

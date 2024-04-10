@@ -2,16 +2,20 @@ package ui;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import webSocket.WebSocketFacade;
 
 import java.util.Arrays;
 
 public class PostLoginUI {
-    private static ServerFacade server;
+    private ServerFacade server;
+    private final  String serverURL;
 
-    public PostLoginUI(ServerFacade server) {
-        PostLoginUI.server = server;
+
+    public PostLoginUI(ServerFacade server, String serverURL) throws ResponseException {
+        this.server = server;
+        this.serverURL = serverURL;
     }
-    public static String eval(String input) {
+    public String eval(String input) {
         var tokens = input.toLowerCase().split(" ");
         var cmd = (tokens.length > 0) ? tokens[0] : "help";
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
@@ -30,7 +34,7 @@ public class PostLoginUI {
         }
     }
 
-    public static String help() {
+    public String help() {
         return """
                 create <NAME> - a game
                 list - games
@@ -41,14 +45,14 @@ public class PostLoginUI {
                 help - list possible commands
                 """;
     }
-    public static String createGame(String... params) throws ResponseException {
+    public String createGame(String... params) throws ResponseException {
         if (params.length != 1){
-            return "Expected: <NAME>";
+            return "Expected: <NAME>\n";
         }
         server.createGame(params[0]);
         return String.format("You have created the game '%s'. \n", params[0]);
     }
-    public static String listGames() throws ResponseException {
+    public String listGames() throws ResponseException {
         var games = server.listGames();
         var result = new StringBuilder();
         var gson = new Gson();
@@ -57,26 +61,29 @@ public class PostLoginUI {
         }
         return result.toString();
     }
-    public static String joinGame(String... params) throws ResponseException {
+    public String joinGame(String... params) throws ResponseException {
         if (params.length != 2){
-            return "Expected: <ID> [WHITE|BLACK|<empty>] ";
+            return "Expected: <ID> [WHITE|BLACK|<empty>] \n";
         }
         server.joinGame(params);
+        Repl.state = Repl.State.GAMEPLAY;
+
         //call websocket facade join game
         BoardPrinter.main(new String[]{});
         return String.format("You have joined the game %s. \n", params[0]);
     }
-    public static String observeGame(String... params) throws ResponseException {
+    public String observeGame(String... params) throws ResponseException {
         if (params.length != 1){
-            return "Expected: <ID>";
+            return "Expected: <ID>\n";
         }
         server.observeGame(params);
+        Repl.state = Repl.State.GAMEPLAY;
         BoardPrinter.main(new String[]{});
         return String.format("You are observing the game %s. \n", Integer.parseInt(params[0]));
     }
-    public static String logout() throws ResponseException {
+    public String logout() throws ResponseException {
         Repl.state = Repl.State.SIGNEDOUT;
         server.logout();
-        return "You have logged out.";
+        return "You have logged out.\n";
     }
 }

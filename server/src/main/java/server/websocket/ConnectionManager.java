@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<String, Session> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, Session> connections = new ConcurrentHashMap<>();
 // make the key a game ID or soemthing like that
     public void add(String authToken, Session session) {
         var connection = new Connection(authToken,session);
