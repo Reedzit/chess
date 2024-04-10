@@ -7,11 +7,10 @@ import java.util.Scanner;
 public class Repl {
     private final PostLoginUI postLoginUI;
     public static State state = State.SIGNEDOUT;
-    public GameplayUI gameplayUI;
+    public static GameplayUI gameplayUI;
 
     public Repl(String serverUrl) throws ResponseException {
         postLoginUI = new PostLoginUI(PreLoginUI.server, serverUrl);
-        gameplayUI = new GameplayUI(serverUrl);
     }
 
     public void run() {
@@ -30,10 +29,6 @@ public class Repl {
                 result = PreLoginUI.eval(line);
                 System.out.print(result);
             }else {
-                if (gameplayUI.gameID == null) {
-                    gameplayUI.joinGame();
-                    gameplayUI.authToken = postLoginUI.server.authToken;
-                }
                 result = gameplayUI.eval(line);
                 System.out.println(result);
             }

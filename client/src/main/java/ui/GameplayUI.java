@@ -49,7 +49,7 @@ public class GameplayUI implements NotificationHandler {
         var params = Arrays.copyOfRange(tokens, 1, tokens.length);
         try {
             return switch (cmd) {
-                case "redraw" -> redrawBoard(currentGame);
+                case "redraw" -> redrawBoard();
                 case "leave" -> leaveGame();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
@@ -72,13 +72,14 @@ public class GameplayUI implements NotificationHandler {
                 """;
     }
 
-    public String joinGame(){}
 
     public String redrawBoard(){
         return BoardPrinter.printChessboard(currentGame);
     }
-    public void leaveGame() throws Exception {
+    public String leaveGame() throws Exception {
         ws.leave(authToken, gameID);
+        Repl.state = Repl.State.SIGNEDIN;
+        return "You have left the game";
     }
     public String makeMove(String[] params) throws ResponseException {
         //still need to figure out promotion piece

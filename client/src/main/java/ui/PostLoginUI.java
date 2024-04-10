@@ -70,7 +70,8 @@ public class PostLoginUI {
         Repl.state = Repl.State.GAMEPLAY;
 
         //call websocket facade join game
-
+        Repl.gameplayUI.gameID = Integer.parseInt(params[0]);
+        Repl.gameplayUI.authToken = server.authToken;
         return String.format("You have joined the game %s. \n", params[0]);
     }
     public String observeGame(String... params) throws ResponseException {
