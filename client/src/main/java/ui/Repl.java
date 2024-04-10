@@ -1,19 +1,15 @@
 package ui;
 
 import exception.ResponseException;
-import webSocket.NotificationHandler;
-import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
 public class Repl {
-    private final PreLoginUI preLoginUI;
     private final PostLoginUI postLoginUI;
     public static State state = State.SIGNEDOUT;
     public GameplayUI gameplayUI;
 
     public Repl(String serverUrl) throws ResponseException {
-        preLoginUI = new PreLoginUI(serverUrl);
         postLoginUI = new PostLoginUI(PreLoginUI.server, serverUrl);
         gameplayUI = new GameplayUI(serverUrl);
     }

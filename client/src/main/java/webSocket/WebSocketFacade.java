@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.MakeMoveCommand;
 import webSocketMessages.userCommands.UserGameCommand;
 
 public class WebSocketFacade {
@@ -36,10 +37,10 @@ public class WebSocketFacade {
     }
 
 
-    @Override
-    public void onOpen(Session session, EndpointConfig endpointConfig) {
-
-    }
+//    @Override
+//    public void onOpen(Session session, EndpointConfig endpointConfig) {
+//
+//    }
     public void makeMove() throws ResponseException {
         try{
             var moveCommand = new MakeMoveCommand();

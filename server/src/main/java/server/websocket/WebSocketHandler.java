@@ -33,11 +33,11 @@ public class WebSocketHandler {
     }
     private void joinPlayer(Integer gameID, ChessGame.TeamColor playerColor, Session session) throws IOException, DataAccessException {
         try {
-            connections.add();
+
             var username = new DbAuthDAO().getUsername(authToken);
-            var teamColor = ChessGame.TeamColor.WHITE;
-                    var message = String.format("%s has joined the game", username);
-            var serverMessage = new ServerMessage(ServerMessage.Type.Notification, message);
+            var message = String.format("%s has joined the game", username);
+            var serverMessage = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
+            connections.add(gameID, session);
             connections.broadcast(authToken, serverMessage);
         } catch (DataAccessException | IOException ex){
 

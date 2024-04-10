@@ -25,7 +25,7 @@ public class PreLoginUI {
     }
     public static String login(String... params) {
         try {
-            server.login(params);
+            String authToken = server.login(params).authToken();
             Repl.state = Repl.State.SIGNEDIN;
             return String.format("You are logged in as %s", params[0]);
         } catch (Exception e){
