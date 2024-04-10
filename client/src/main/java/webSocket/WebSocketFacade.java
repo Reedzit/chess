@@ -1,5 +1,6 @@
 package webSocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -69,8 +70,8 @@ public class WebSocketFacade {
     public void joinObserver(Integer gameID) {
 
     }
-    public void leave(String authToken, Integer gameID) throws Exception {
-        LeaveCommand command = new LeaveCommand(authToken, gameID);
+    public void leave(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws Exception {
+        LeaveCommand command = new LeaveCommand(authToken, gameID, playerColor);
         this.send(new Gson().toJson(command));
     }
     public void resign(String authToken, Integer gameID) throws Exception {

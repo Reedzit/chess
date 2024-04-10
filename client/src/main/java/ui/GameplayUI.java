@@ -78,16 +78,16 @@ public class GameplayUI implements NotificationHandler {
         return BoardPrinter.printChessboard(currentGame);
     }
     public String leaveGame() throws Exception {
-        ws.leave(authToken, gameID);
+        ws.leave(authToken, gameID, playerColor);
         Repl.state = Repl.State.SIGNEDIN;
         return "You have left the game";
     }
     public String makeMove(String[] params) throws ResponseException {
-        //still need to figure out promotion piece
         ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
         ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
         ChessMove move = new ChessMove(startPosition, endPosition, null); // how do I know what the promotion piece will be? do I check where they are?
         ws.makeMove(authToken, gameID, move);
+        return "";
     }
     public String resign() throws Exception {
         System.out.println("\nAre you sure you want to resign? (yes/no)\n");

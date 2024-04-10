@@ -24,18 +24,35 @@ public class ConnectionManager {
         list.removeIf(connection -> connection.getAuthToken().equals(authToken));
 
     }
-    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg) throws IOException{
+    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg) throws IOException {
         var removeList = new ArrayList<Connection>();
-        var list = connections.get(gameID);
-        for (var connection : list) {
-            if(connection.getAuthToken().equals(excludeAuthToken) || !connection.getSession().isOpen()){
-                removeList.add(connection);
-            }else {
-                connection.send(msg.toString());
+        if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            var list = connections.get(gameID);
+            for (var connection : list) {
+                if (!connection.getSession().isOpen()) {
+                    removeList.add(connection);
+                } else if (connection.getAuthToken().equals(excludeAuthToken)){
+                    continue;
+                }else {
+                    connection.send(msg);
+                }
             }
-        }
-        for (var remove : removeList){
-            list.removeIf(c -> c.getAuthToken().equals(remove.getAuthToken()));
+            for (var remove : removeList) {
+                list.removeIf(c -> c.getAuthToken().equals(remove.getAuthToken()));
+            }
+        } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+            var list = connections.get(gameID);
+            for (var connection : list) {
+                if (connection.getAuthToken().equals(excludeAuthToken)){
+                    connection.send(msg);
+                    return;
+                }
+            }
+        } else if (msg.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            var list = connections.get(gameID);
+            for (var connection : list) {
+                connection.send(msg);
+            }
         }
     }
 }
