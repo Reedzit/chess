@@ -51,31 +51,46 @@ public class WebSocketFacade {
 //    public void onOpen(Session session, EndpointConfig endpointConfig) {
 //
 //    }
-    public void makeMove(String authToken, Integer gameID, ChessMove move) throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, ChessMove move) {
         try{
             var moveCommand = new MakeMoveCommand(authToken, gameID, move);
             this.send(new Gson().toJson(moveCommand));
 
 
-        } catch (Exception ex){
-            throw new ResponseException(500, ex.getMessage());
+        }catch (Exception ex){
+            System.out.println("Error: Unable to make connection to server");
         }
     }
-    public void joinPlayer(Integer gameID, String authToken, ChessGame.TeamColor playerColor) throws Exception {
-        JoinPlayerCommand command = new JoinPlayerCommand(authToken,gameID, playerColor);
-        this.send(new Gson().toJson(command));
-
+    public void joinPlayer(Integer gameID, String authToken, ChessGame.TeamColor playerColor)  {
+        try {
+            JoinPlayerCommand command = new JoinPlayerCommand(authToken, gameID, playerColor);
+            this.send(new Gson().toJson(command));
+        }catch (Exception ex){
+            System.out.println("Error: Unable to make connection to server");
+        }
     }
-    public void joinObserver(Integer gameID, String authToken) throws Exception {
-        JoinObserverCommand command = new JoinObserverCommand(authToken,gameID);
-        this.send(new Gson().toJson(command));
+    public void joinObserver(Integer gameID, String authToken) {
+        try {
+            JoinObserverCommand command = new JoinObserverCommand(authToken, gameID);
+            this.send(new Gson().toJson(command));
+        }catch (Exception ex){
+            System.out.println("Error: Unable to make connection to server");
+        }
     }
-    public void leave(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws Exception {
-        LeaveCommand command = new LeaveCommand(authToken, gameID, playerColor);
-        this.send(new Gson().toJson(command));
+    public void leave(String authToken, Integer gameID, ChessGame.TeamColor playerColor) {
+        try {
+            LeaveCommand command = new LeaveCommand(authToken, gameID, playerColor);
+            this.send(new Gson().toJson(command));
+        }catch (Exception ex){
+            System.out.println("Error: Unable to make connection to server");
+        }
     }
-    public void resign(String authToken, Integer gameID) throws Exception {
-        ResignCommand resignCommand = new ResignCommand(authToken, gameID);
-        this.send(new Gson().toJson(resignCommand));
+    public void resign(String authToken, Integer gameID) {
+        try {
+            ResignCommand resignCommand = new ResignCommand(authToken, gameID);
+            this.send(new Gson().toJson(resignCommand));
+        }catch (Exception ex){
+            System.out.println("Error: Unable to make connection to server");
+        }
     }
 }
