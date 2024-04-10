@@ -3,6 +3,7 @@ package ui;
 import exception.ResponseException;
 import webSocket.NotificationHandler;
 import webSocket.WebSocketFacade;
+import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Arrays;
@@ -18,14 +19,21 @@ public class GameplayUI implements NotificationHandler {
     @Override
     public void notify(ServerMessage message) {
         switch (message.getServerMessageType()) {
+            case LOAD_GAME -> loadGame(message)
             // if LOADGAME do something
             // if notification do something
         }
     }
 
     public static void main(String[] args) throws ResponseException {
-        GameplayUI ui = new GameplayUI();
-        ui.eval();
+        GameplayUI ui = new GameplayUI("");
+        Scanner scanner = new Scanner(System.in);
+        String result = "";
+        while (!result.equals("quit")){
+            String line = scanner.nextLine();
+            result = ui.eval(line);
+        }
+
 
         /**
          * if userInput == "help"
@@ -90,7 +98,9 @@ public class GameplayUI implements NotificationHandler {
     public String showMoves(){
         return "";
     }
+    public void loadGame(LoadGameMessage msg) {
 
+    }
 
     //print out boards
 
