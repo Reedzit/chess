@@ -1,23 +1,29 @@
 package server.websocket;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
 import dataAccess.DbAuthDAO;
+import dataAccess.DbGameDAO;
 import dataAccess.DbUserDAO;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import service.UserService;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.serverMessages.NotificationMessage;
+import webSocketMessages.userCommands.*;
 import webSocketMessages.serverMessages.ServerMessage;
 
 import java.io.IOException;
-import java.util.jar.JarEntry;
 
 @WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
+    DbAuthDAO dbAuthDAO = new DbAuthDAO();
+    DbGameDAO dbGameDAO = new DbGameDAO();
+    DbUserDAO dbUserDAO = new DbUserDAO();
+
+    public WebSocketHandler() throws DataAccessException {
+    }
+
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
@@ -25,33 +31,45 @@ public class WebSocketHandler {
             switch (UserGameCommand.getCommandType()) {
                 case JOIN_PLAYER -> joinPlayer(command, session);
                 case JOIN_OBSERVER -> joinObserver(command, session);
-                case MAKE_MOVE -> makeMove();
-                case LEAVE -> leave();
-                case RESIGN -> resign();
+                case MAKE_MOVE -> makeMove(command, session);
+                case LEAVE -> leave(command, session);
+                case RESIGN -> resign(command, session);
             }
         }
     }
-    private void joinPlayer(Integer gameID, ChessGame.TeamColor playerColor, Session session) throws IOException, DataAccessException {
-        try {
+    private void joinPlayer(JoinPlayerCommand command, Session session) throws IOException, DataAccessException {
 
-            var username = new DbAuthDAO().getUsername(authToken);
-            var message = String.format("%s has joined the game", username);
-            var serverMessage = new ServerMessage(message, ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.add(gameID, session);
-            connections.broadcast(authToken, serverMessage);
-        } catch (DataAccessException | IOException ex){
+        var username = dbAuthDAO.getUsername(command.getAuthString());
+        var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s has joined the game", username));
+        connections.add(command.getGameID(), command.getAuthString(), session);
+        connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
 
-        }
     }
-    private void joinObserver(Integer gameID, Session session) throws IOException, DataAccessException {
-        connections.add(authToken,session);
-        var username = new DbAuthDAO().getUsername(authToken);
+    private void joinObserver(JoinObserverCommand command, Session session) throws IOException, DataAccessException {
+        connections.add(command.getGameID(), command.getAuthString(), session);
+        var username = dbAuthDAO.getUsername(command.getAuthString());
         var message = String.format("%s is observing your game", username);
-        var serverMessage = new ServerMessage(ServerMessage.Type.Notification, message);
-        connections.broadcast(authToken, serverMessage);
+        var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
     }
-    private void makeMove(String authToken, Session session) {
-
+    private void makeMove(MakeMoveCommand command, Session session) throws DataAccessException, IOException {
+        var username = dbAuthDAO.getUsername(command.getAuthString());
+        var message = String.format("%s made a move", username);
+        var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
     }
-
+    private void leave(LeaveCommand command, Session session) throws DataAccessException, IOException {
+        connections.removePlayer(command.getGameID(), command.getAuthString(), session);
+        var username = dbAuthDAO.getUsername(command.getAuthString());
+        var message = String.format("%s left the game", username);
+        var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
+    }
+    private void resign(ResignCommand command, Session session) throws DataAccessException, IOException {
+        connections.removePlayer(command.getGameID(), command.getAuthString(), session);
+        var username = dbAuthDAO.getUsername(command.getAuthString());
+        var message = String.format("%s resigned. You win!", username);
+        var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
+    }
 }
