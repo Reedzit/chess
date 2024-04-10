@@ -32,9 +32,9 @@ public class Repl {
             }else {
                 if (gameplayUI.gameID == null) {
                     gameplayUI.joinGame();
+                    gameplayUI.authToken = postLoginUI.server.authToken;
                 }
                 result = gameplayUI.eval(line);
-
                 System.out.println(result);
             }
 

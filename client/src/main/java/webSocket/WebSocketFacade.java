@@ -1,5 +1,6 @@
 package webSocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 
@@ -7,8 +8,14 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import webSocketMessages.serverMessages.ErrorMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.LeaveCommand;
 import webSocketMessages.userCommands.MakeMoveCommand;
+import webSocketMessages.userCommands.ResignCommand;
 import webSocketMessages.userCommands.UserGameCommand;
 
 public class WebSocketFacade {
@@ -24,8 +31,13 @@ public class WebSocketFacade {
             this.session.addMessageHandler(new MessageHandler.Whole<String>(){
                 @Override
                         public void onMessage(String msg) {
+                    ServerMessage updatedMessage;
                     ServerMessage serverMessage = new Gson().fromJson(msg, ServerMessage.class);
-                    notificationHandler.notify(serverMessage);
+                    switch(serverMessage.getServerMessageType()){
+                        case NOTIFICATION -> notificationHandler.notify((NotificationMessage)serverMessage);
+                        case ERROR -> notificationHandler.notify((ErrorMessage)serverMessage);
+                        default -> notificationHandler.notify((LoadGameMessage)serverMessage);
+                    }
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -41,9 +53,11 @@ public class WebSocketFacade {
 //    public void onOpen(Session session, EndpointConfig endpointConfig) {
 //
 //    }
-    public void makeMove() throws ResponseException {
+    public void makeMove(String authToken, Integer gameID, ChessMove move) throws ResponseException {
         try{
-            var moveCommand = new MakeMoveCommand();
+            var moveCommand = new MakeMoveCommand(authToken, gameID, move);
+            this.send(new Gson().toJson(moveCommand));
+
 
         } catch (Exception ex){
             throw new ResponseException(500, ex.getMessage());
@@ -54,5 +68,13 @@ public class WebSocketFacade {
     }
     public void joinObserver(Integer gameID) {
 
+    }
+    public void leave(String authToken, Integer gameID) throws Exception {
+        LeaveCommand command = new LeaveCommand(authToken, gameID);
+        this.send(new Gson().toJson(command));
+    }
+    public void resign(String authToken, Integer gameID) throws Exception {
+        ResignCommand resignCommand = new ResignCommand(authToken, gameID);
+        this.send(new Gson().toJson(resignCommand));
     }
 }

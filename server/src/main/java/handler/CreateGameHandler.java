@@ -11,10 +11,10 @@ import spark.Route;
 public class CreateGameHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        System.out.println("DEBUG: " + request.body());
+//        System.out.println("DEBUG: " + request.body());
         CreateGameRequest createGameRequest = new Gson().fromJson(request.body(), CreateGameRequest.class);
         String authToken = request.headers("authorization");
-        System.out.println("This is the authToken for create game: "+ authToken);
+//        System.out.println("This is the authToken for create game: "+ authToken);
         CreateGameResponse createGameResponse = new GameService().createGame(createGameRequest.gameName(), authToken);
         switch (createGameResponse.message()){
             case null -> response.status(200);

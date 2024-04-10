@@ -8,7 +8,7 @@ import webSocket.WebSocketFacade;
 import java.util.Arrays;
 
 public class PostLoginUI {
-    private ServerFacade server;
+    public ServerFacade server;
     private final  String serverURL;
 
 
