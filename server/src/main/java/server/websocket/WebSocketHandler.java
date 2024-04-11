@@ -24,31 +24,38 @@ import java.io.IOException;
 @WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
-    DbAuthDAO dbAuthDAO = new DbAuthDAO();
-    DbGameDAO dbGameDAO = new DbGameDAO();
-    DbUserDAO dbUserDAO = new DbUserDAO();
+    DbAuthDAO dbAuthDAO;
+    DbGameDAO dbGameDAO;
+    DbUserDAO dbUserDAO;
 
-    public WebSocketHandler() throws DataAccessException {
+    public WebSocketHandler()  {
+        try {
+            this.dbAuthDAO = new DbAuthDAO();
+            dbGameDAO = new DbGameDAO();
+            dbUserDAO = new DbUserDAO();
+        }catch (DataAccessException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        if(new DbAuthDAO().getAuth(command.getAuthString())!= null) {
-//            if (command.getCommandType() == UserGameCommand.CommandType.JOIN_PLAYER){
-//                command = new Gson().fromJson(message, JoinPlayerCommand.class);
-//                joinPlayer(command, session);
-//            }
-            switch (command.getCommandType()) {
-                case JOIN_PLAYER -> joinPlayer((JoinPlayerCommand) command, session);
-                case JOIN_OBSERVER -> joinObserver((JoinObserverCommand)command, session);
-                case MAKE_MOVE -> makeMove((MakeMoveCommand) command, session);
-                case LEAVE -> leave((LeaveCommand) command, session);
-                case RESIGN -> resign((ResignCommand) command, session);
+        try {
+            if (new DbAuthDAO().getAuth(command.getAuthString()) != null) {
+                switch (command.getCommandType()) {
+                    case JOIN_PLAYER -> joinPlayer((JoinPlayerCommand) command, session);
+                    case JOIN_OBSERVER -> joinObserver((JoinObserverCommand) command, session);
+                    case MAKE_MOVE -> makeMove((MakeMoveCommand) command, session);
+                    case LEAVE -> leave((LeaveCommand) command, session);
+                    case RESIGN -> resign((ResignCommand) command, session);
+                }
             }
+        } catch (DataAccessException ex) {
+            System.out.println(ex.getMessage());
         }
     }
-    private void joinPlayer(JoinPlayerCommand command, Session session) throws IOException, DataAccessException {
+    private void joinPlayer(JoinPlayerCommand command, Session session) {
         try {
             ServerMessage serverMessage;
             var username = dbAuthDAO.getUsername(command.getAuthString());
@@ -66,20 +73,19 @@ public class WebSocketHandler {
                     serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: White team is already taken");
                 }
             }
-
             connections.add(command.getGameID(), command.getAuthString(), session);
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
             LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID())).game());
             connections.broadcastToOne(command.getGameID(), command.getAuthString(), loadGameMessage);
         }catch (Exception ex) {
             if (ex.getClass() == DataAccessException.class){
-                connections.broadcastToOne(command.getGameID(), command.getAuthString(), new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game."));
+                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game.");
             }else{
-                System.out.println(ex.getMessage());
+                System.out.printf("Error: %s", ex.getMessage());
             }
         }
     }
-    private void joinObserver(JoinObserverCommand command, Session session) throws IOException, DataAccessException {
+    private void joinObserver(JoinObserverCommand command, Session session) {
         try {
             connections.add(command.getGameID(), command.getAuthString(), session);
             var username = dbAuthDAO.getUsername(command.getAuthString());
@@ -90,9 +96,11 @@ public class WebSocketHandler {
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
         }catch (Exception ex){
             if (ex.getClass() == InvalidGameIDException.class){
-                connections.broadcastToOne(command.getGameID(), command.getAuthString(),new ErrorMessage( ServerMessage.ServerMessageType.ERROR,ex.getMessage()));
+                ErrorMessage serverMessage = new ErrorMessage( ServerMessage.ServerMessageType.ERROR,String.format("Error: %s", ex.getMessage()));
+                Connection connection = new Connection(command.getAuthString(),session);
+                connection.send(serverMessage);
             }else{
-                System.out.println(ex.getMessage());
+                System.out.printf("Error: %s", ex.getMessage());
             }
         }
     }
@@ -136,7 +144,7 @@ public class WebSocketHandler {
             connection.send(serverMessage);
         }
     }
-    private void resign(ResignCommand command, Session session) throws DataAccessException, IOException {
+    private void resign(ResignCommand command, Session session) {
         try {
             var username = dbAuthDAO.getUsername(command.getAuthString());
             var message = String.format("%s resigned", username);

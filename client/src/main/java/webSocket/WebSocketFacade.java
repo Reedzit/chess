@@ -10,13 +10,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import webSocketMessages.serverMessages.ErrorMessage;
-import webSocketMessages.serverMessages.LoadGameMessage;
-import webSocketMessages.serverMessages.NotificationMessage;
-import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.serverMessages.*;
 import webSocketMessages.userCommands.*;
 
-public class WebSocketFacade {
+public class WebSocketFacade extends Endpoint{
     Session session;
     NotificationHandler notificationHandler;
     public WebSocketFacade (String url, NotificationHandler notificationHandler) throws ResponseException {
@@ -28,14 +25,9 @@ public class WebSocketFacade {
             this.session = container.connectToServer(this, socketURI);
             this.session.addMessageHandler(new MessageHandler.Whole<String>(){
                 @Override
-                        public void onMessage(String msg) {
-                    ServerMessage updatedMessage;
+                public void onMessage(String msg) {
                     ServerMessage serverMessage = new Gson().fromJson(msg, ServerMessage.class);
-                    switch(serverMessage.getServerMessageType()){
-                        case NOTIFICATION -> notificationHandler.notify((NotificationMessage)serverMessage);
-                        case ERROR -> notificationHandler.notify((ErrorMessage)serverMessage);
-                        default -> notificationHandler.notify((LoadGameMessage)serverMessage);
-                    }
+                    notificationHandler.notify(serverMessage);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -46,11 +38,6 @@ public class WebSocketFacade {
         this.session.getBasicRemote().sendText(msg); // call this after every method
     }
 
-
-//    @Override
-//    public void onOpen(Session session, EndpointConfig endpointConfig) {
-//
-//    }
     public void makeMove(String authToken, Integer gameID, ChessMove move) {
         try{
             var moveCommand = new MakeMoveCommand(authToken, gameID, move);
@@ -92,5 +79,9 @@ public class WebSocketFacade {
         }catch (Exception ex){
             System.out.println("Error: Unable to make connection to server");
         }
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 }

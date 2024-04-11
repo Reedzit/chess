@@ -7,10 +7,9 @@ import chess.ChessPosition;
 
 public class BoardPrinter {
     public static void main(String[] args) {
-        ChessBoard board = new ChessBoard();
-        board.resetBoard();
+        ChessGame game = new ChessGame();
 //        System.out.println(board);
-        System.out.println(printChessboard(board));
+        System.out.println(printChessboard(game));
     }
 
     public static String printChessboard(ChessGame game) {

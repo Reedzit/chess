@@ -35,7 +35,7 @@ public class GameplayUI implements NotificationHandler {
     }
 
     public static void main(String[] args) throws ResponseException {
-        GameplayUI ui = new GameplayUI("");
+        GameplayUI ui = new GameplayUI(Repl.serverUrl);
         Scanner scanner = new Scanner(System.in);
         String result = "";
         while (!result.equals("quit")){
@@ -75,6 +75,7 @@ public class GameplayUI implements NotificationHandler {
 
     public void joinPlayer() {
         ws.joinPlayer(gameID, authToken, playerColor);
+
     }
     public void joinObserver() {
         ws.joinObserver(gameID, authToken);
