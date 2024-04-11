@@ -21,9 +21,11 @@ public class GameplayUI implements NotificationHandler {
     ChessGame.TeamColor playerColor;
     String authToken;
     WebSocketFacade ws;
+    BoardPrinter boardPrinter;
 
     public GameplayUI(String serverUrl) throws ResponseException {
         ws = new WebSocketFacade(serverUrl, this);
+        boardPrinter = new BoardPrinter();
     }
     @Override
     public void notify(String message) {
@@ -100,7 +102,13 @@ public class GameplayUI implements NotificationHandler {
 
 
     public String redrawBoard(){
-        return BoardPrinter.printChessboard(currentGame);
+        if (playerColor == null) {
+            return boardPrinter.printChessboard(currentGame);
+        }else if (playerColor == ChessGame.TeamColor.BLACK){
+            return boardPrinter.printBlackSide(currentGame).toString();
+        }else {
+            return boardPrinter.printWhiteSide(currentGame).toString();
+        }
     }
     public String leaveGame() throws Exception {
         ws.leave(authToken, gameID, playerColor);

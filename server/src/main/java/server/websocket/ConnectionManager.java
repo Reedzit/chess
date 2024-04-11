@@ -1,13 +1,9 @@
 package server.websocket;
 
-import exception.InvalidGameIDException;
 import org.eclipse.jetty.websocket.api.Session;
-import server.Server;
 import webSocketMessages.serverMessages.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
@@ -32,11 +28,8 @@ public class ConnectionManager {
         list.removeIf(connection -> connection.getAuthToken().equals(authToken));
 
     }
-    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg) throws InvalidGameIDException {
+    public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg)  {
         var removeList = new ArrayList<Connection>();
-        if (!connections.containsKey(gameID)) {
-            throw new InvalidGameIDException("Error: Invalid gameID. Please choose a valid gameID");
-        }
         var list = connections.get(gameID);
         if (msg.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             for (var connection : list) {
@@ -72,7 +65,7 @@ public class ConnectionManager {
             connection.send(msg);
         }
     }
-    public void broadcastToOne(Integer gameID, String authToken, ServerMessage msg) throws IOException {
+    public void broadcastToOne(Integer gameID, String authToken, ServerMessage msg) {
         for (var connection : connections.get(gameID)) {
             if (connection.getAuthToken().equals(authToken)) {
                 connection.send(msg);

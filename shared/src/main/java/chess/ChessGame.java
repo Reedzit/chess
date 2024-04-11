@@ -11,7 +11,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessGame {
-
+        public boolean gameOver;
         TeamColor currentTurn;
         ChessBoard currentBoard;
     public ChessGame() {
@@ -19,8 +19,11 @@ public class ChessGame {
         ChessBoard board = new ChessBoard();
         board.resetBoard();
         setBoard(board);
+        gameOver = false;
     }
-
+    public void gameOver(){
+        gameOver = true;
+    }
     /**
      * @return Which team's turn it is
      */
@@ -87,7 +90,10 @@ public class ChessGame {
      * @param move chess move to preform
      * @throws InvalidMoveException if move is invalid
      */
-    public void makeMove(ChessMove move) throws InvalidMoveException {
+    public void makeMove(ChessMove move) throws InvalidMoveException{
+//        if (gameOver){
+//            throw new GameOverException("Error: this game has ended");
+//        }
         if (getBoard().getPiece(move.getStartPosition()).getTeamColor()== this.getTeamTurn() && validMoves(move.getStartPosition()).contains(move)){
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
             if (this.getBoard().getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null){     //logic for promotion piece

@@ -4,13 +4,10 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
-
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import webSocketMessages.serverMessages.*;
 import webSocketMessages.userCommands.*;
 
 public class WebSocketFacade extends Endpoint{
@@ -46,8 +43,6 @@ public class WebSocketFacade extends Endpoint{
         try{
             var moveCommand = new MakeMoveCommand(authToken, gameID, move);
             this.send(new Gson().toJson(moveCommand));
-
-
         }catch (Exception ex){
             System.out.println("Error: Unable to make connection to server");
         }
