@@ -11,12 +11,18 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<Integer, List<Connection>> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, ArrayList<Connection>> connections = new ConcurrentHashMap<>();
 // make the key a game ID or soemthing like that
     public void add(Integer gameID, String authToken, Session session) {
         var connection = new Connection(authToken,session);
-        var list = connections.get(gameID);
-        list.add(connection);
+        if (connections.containsKey(gameID)){
+            ArrayList<Connection> list = connections.get(gameID);
+            list.add(connection);
+        }else {
+            connections.put(gameID, new ArrayList<Connection>());
+            ArrayList<Connection> list = connections.get(gameID);
+            list.add(connection);
+        }
     }
     public void removeGame(Integer gameID) {
         connections.remove(gameID);

@@ -44,11 +44,26 @@ public class WebSocketHandler {
         try {
             if (dbAuthDAO.getAuth(command.getAuthString()) != null) {
                 switch (command.getCommandType()) {
-                    case JOIN_PLAYER -> joinPlayer((JoinPlayerCommand) command, session);
-                    case JOIN_OBSERVER -> joinObserver((JoinObserverCommand) command, session);
-                    case MAKE_MOVE -> makeMove((MakeMoveCommand) command, session);
-                    case LEAVE -> leave((LeaveCommand) command, session);
-                    case RESIGN -> resign((ResignCommand) command, session);
+                    case JOIN_PLAYER -> {
+                        JoinPlayerCommand joinPlayerCommand = new Gson().fromJson(message, JoinPlayerCommand.class);
+                        joinPlayer(joinPlayerCommand, session);
+                    }
+                    case JOIN_OBSERVER -> {
+                        JoinObserverCommand joinObserverCommand = new Gson().fromJson(message, JoinObserverCommand.class);
+                        joinObserver(joinObserverCommand, session);
+                    }
+                    case MAKE_MOVE -> {
+                        MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
+                        makeMove(makeMoveCommand, session);
+                    }
+                    case LEAVE -> {
+                        LeaveCommand leaveCommand = new Gson().fromJson(message, LeaveCommand.class);
+                        leave(leaveCommand, session);
+                    }
+                    case RESIGN -> {
+                        ResignCommand resignCommand = new Gson().fromJson(message, ResignCommand.class);
+                        resign(resignCommand, session);
+                    }
                 }
             }
         } catch (DataAccessException ex) {
@@ -75,8 +90,10 @@ public class WebSocketHandler {
             }
             connections.add(command.getGameID(), command.getAuthString(), session);
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
-            LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID())).game());
-            connections.broadcastToOne(command.getGameID(), command.getAuthString(), loadGameMessage);
+            if (serverMessage.getServerMessageType()!= ServerMessage.ServerMessageType.ERROR) {
+                LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID())).game());
+                connections.broadcastToOne(command.getGameID(), command.getAuthString(), loadGameMessage);
+            }
         }catch (Exception ex) {
             if (ex.getClass() == DataAccessException.class){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game.");
