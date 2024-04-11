@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPosition;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocket.NotificationHandler;
 import webSocket.WebSocketFacade;
@@ -25,11 +26,18 @@ public class GameplayUI implements NotificationHandler {
         ws = new WebSocketFacade(serverUrl, this);
     }
     @Override
-    public void notify(ServerMessage message) {
-        switch (message.getServerMessageType()) {
-            case LOAD_GAME -> loadGame((LoadGameMessage) message);
-            case ERROR -> sendError((ErrorMessage)message);
-            case NOTIFICATION -> broadcast((NotificationMessage) message);
+    public void notify(String message) {
+        ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+        switch (serverMessage.getServerMessageType()) {
+            case LOAD_GAME -> { LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                loadGame(loadGameMessage);
+            }
+            case ERROR -> { ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                sendError(errorMessage);
+            }
+            case NOTIFICATION -> { NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
+                broadcast(notification);
+            }
 
         }
     }

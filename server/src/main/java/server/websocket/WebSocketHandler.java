@@ -18,9 +18,6 @@ import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.*;
 import webSocketMessages.serverMessages.ServerMessage;
 
-import javax.xml.crypto.Data;
-import java.io.IOException;
-
 @WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
@@ -97,6 +94,8 @@ public class WebSocketHandler {
         }catch (Exception ex) {
             if (ex.getClass() == DataAccessException.class){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game.");
+                Connection connection = new Connection(command.getAuthString(),session);
+                connection.send(serverMessage);
             }else{
                 System.out.printf("Error: %s", ex.getMessage());
             }
