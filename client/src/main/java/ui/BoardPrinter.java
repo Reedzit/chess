@@ -19,6 +19,7 @@ public class BoardPrinter {
         boolean isWhite = true;
         for (int i = 1; i < 9; i++) {
             boardString.append(EscapeSequences.RESET_BG_COLOR);
+            boardString.append(EscapeSequences.EMPTY);
             boardString.append("\n");
             for (int j = 1; j < 9; j++) {
                 if (isWhite){
@@ -75,6 +76,7 @@ public class BoardPrinter {
         boolean isWhite = true;
         for (int i = 8; i > 0; i--) {
             boardString.append(EscapeSequences.RESET_BG_COLOR);
+            boardString.append(EscapeSequences.EMPTY);
             boardString.append("\n");
             for (int j = 8; j > 0; j--) {
                 if (isWhite){

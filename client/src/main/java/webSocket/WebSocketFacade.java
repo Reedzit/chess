@@ -23,7 +23,6 @@ public class WebSocketFacade extends Endpoint{
             this.session.addMessageHandler(new MessageHandler.Whole<String>(){
                 @Override
                 public void onMessage(String msg) {
-//                    ServerMessage serverMessage = new Gson().fromJson(msg, ServerMessage.class);
                     notificationHandler.notify(msg);
                 }
             });
@@ -41,7 +40,7 @@ public class WebSocketFacade extends Endpoint{
 
     public void makeMove(String authToken, Integer gameID, ChessGame.TeamColor playerColor, ChessMove move) {
         try{
-            var moveCommand = new MakeMoveCommand(authToken, gameID, playerColor,move);
+            var moveCommand = new MakeMoveCommand(authToken, gameID,move);
             this.send(new Gson().toJson(moveCommand));
         }catch (Exception ex){
             System.out.println("Error: Unable to make connection to server");

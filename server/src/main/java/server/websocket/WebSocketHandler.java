@@ -106,13 +106,9 @@ public class WebSocketHandler {
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), loadGameMessage);
             }
         }catch (DataAccessException ex) {
-//            if (ex.getClass() == DataAccessException.class){
-                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game.");
-                Connection connection = new Connection(command.getAuthString(),session);
-                connection.send(serverMessage);
-//            }else{
-//                System.out.printf("Error: %s", ex.getMessage());
-//            }
+            ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unable to get game. Please try another game.");
+            Connection connection = new Connection(command.getAuthString(),session);
+            connection.send(serverMessage);
         }
     }
     private void joinObserver(JoinObserverCommand command, Session session) {
@@ -149,10 +145,16 @@ public class WebSocketHandler {
     }
     private void makeMove(MakeMoveCommand command, Session session) {
         try {
+            ChessGame.TeamColor playerColor = null;
             var username = dbAuthDAO.getUsername(command.getAuthString());
             GameData gameData = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
+            if (Objects.equals(gameData.whiteUsername(), username)){
+                playerColor = ChessGame.TeamColor.WHITE;
+            }else if (gameData.blackUsername() == username){
+                playerColor = ChessGame.TeamColor.BLACK;
+            }
             ChessGame chessGame = gameData.game();
-            if (chessGame.getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != command.getTeamColor()){
+            if (chessGame.getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != playerColor){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
                 return;
