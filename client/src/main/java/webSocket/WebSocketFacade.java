@@ -34,8 +34,12 @@ public class WebSocketFacade extends Endpoint{
             throw new ResponseException(500, ex.getMessage());
         }
     }
-    public void send(String msg) throws Exception {
-        this.session.getBasicRemote().sendText(msg); // call this after every method
+    public void send(String msg) {
+        try {
+            this.session.getBasicRemote().sendText(msg); // call this after every method
+        }catch (Exception e){
+            System.out.printf("This exception is thrown trying to send a message from client to the server: %s",e.getMessage());
+        }
     }
 
     public void makeMove(String authToken, Integer gameID, ChessMove move) {

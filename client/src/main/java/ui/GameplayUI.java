@@ -63,14 +63,23 @@ public class GameplayUI implements NotificationHandler {
     }
 
     public String printHelp() {
-        return """
-                redraw - redraws chessboard
-                leave - leave game
-                move <startRow> <startColumn> <endRow> <endColumn> - a game
-                resign - resign from game
-                showMoves - highlights legal moves
-                help - list possible commands
-                """;
+        if (playerColor != null) {
+            return """
+                    redraw - redraws chessboard
+                    leave - leave game
+                    move <startRow> <startColumn> <endRow> <endColumn> - a game
+                    resign - resign from game
+                    showMoves <row> <column> - highlights legal moves
+                    help - list possible commands
+                    """;
+        } else {
+            return """
+                    redraw - redraws chessboard
+                    leave - leave game
+                    showMoves <row> <column> - highlights legal moves
+                    help - list possible commands
+                    """;
+        }
     }
 
     public void joinPlayer() {
@@ -90,7 +99,12 @@ public class GameplayUI implements NotificationHandler {
         Repl.state = Repl.State.SIGNEDIN;
         return "You have left the game";
     }
-    public String makeMove(String[] params) throws ResponseException {
+    public String makeMove(String[] params) {
+        if (params.length != 4){
+            return "Please enter you move as <startRow> <startColumn> <endRow> <endColumn>";
+        }else if (playerColor == null){
+            return "Cannot make move as an observer.";
+        }
         ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
         ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
         ChessMove move = new ChessMove(startPosition, endPosition, null); // how do I know what the promotion piece will be? do I check where they are?
@@ -117,6 +131,7 @@ public class GameplayUI implements NotificationHandler {
     }
     public void loadGame(LoadGameMessage msg) {
         this.currentGame = msg.getGame();
+        System.out.println("Game has been loaded");
     }
     public void broadcast(NotificationMessage msg){
         System.out.println(msg.getMessage());

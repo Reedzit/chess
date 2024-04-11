@@ -39,10 +39,10 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) {
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
         try {
-            if (new DbAuthDAO().getAuth(command.getAuthString()) != null) {
+            if (dbAuthDAO.getAuth(command.getAuthString()) != null) {
                 switch (command.getCommandType()) {
                     case JOIN_PLAYER -> joinPlayer((JoinPlayerCommand) command, session);
                     case JOIN_OBSERVER -> joinObserver((JoinObserverCommand) command, session);
