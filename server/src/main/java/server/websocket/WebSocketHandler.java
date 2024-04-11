@@ -150,51 +150,60 @@ public class WebSocketHandler {
     private void makeMove(MakeMoveCommand command, Session session) {
         try {
             var username = dbAuthDAO.getUsername(command.getAuthString());
-            GameData game = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
-            if(!game.game().validMoves(command.getMove().getStartPosition()).contains(new ChessMove( command.getMove().getStartPosition(), command.getMove().getEndPosition(), null))){
+            GameData gameData = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
+            ChessGame chessGame = gameData.game();
+            if (chessGame.getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != command.getTeamColor()){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
                 return;
             }
-            if (game.game().gameOver){
+            if(!chessGame.validMoves(command.getMove().getStartPosition()).contains(new ChessMove( command.getMove().getStartPosition(), command.getMove().getEndPosition(), null))){
+                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
+                connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
+                return;
+            }
+            if (gameData.game().gameOver){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This game is over.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
             }
-            game.game().makeMove(command.getMove());
+            chessGame.makeMove(command.getMove());
             var message = String.format("%s made a move", username);
-            LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, game.game());
+            LoadGameMessage loadGameMessage = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
             connections.broadcastAll(command.getGameID(), loadGameMessage);
             var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
-            if (game.game().isInStalemate(ChessGame.TeamColor.BLACK)){
+            if (gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)){
                NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in stalemate. White team wins!");
                connections.broadcastAll(command.getGameID(), notification);
-               game.game().gameOver();
-            }else if (game.game().isInStalemate(ChessGame.TeamColor.WHITE)){
+               chessGame.gameOver();
+            }else if (gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
                 NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "White is in stalemate. Black team wins!");
                 connections.broadcastAll(command.getGameID(), notification);
-            }else if (game.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
+                chessGame.gameOver();
+            }else if (gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                 NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "White is in checkmate. Black team wins!");
                 connections.broadcastAll(command.getGameID(), notification);
-            }else if (game.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+                chessGame.gameOver();
+            }else if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
                 NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in checkmate. White team wins!");
                 connections.broadcastAll(command.getGameID(), notification);
-            }else if (game.game().isInCheck(ChessGame.TeamColor.WHITE)){
-               if(!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.whiteUsername())){
-                   NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is now in check.",game.whiteUsername()));
+                chessGame.gameOver();
+            }else if (gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
+               if(!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), gameData.whiteUsername())){
+                   NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is now in check.",gameData.whiteUsername()));
                    connections.broadcastAll(command.getGameID(), notification);
                }
-            }else if (game.game().isInCheck(ChessGame.TeamColor.BLACK)){
-                if(!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.blackUsername())){
-                    NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is now in check.",game.whiteUsername()));
+            }else if (gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
+                if(!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), gameData.blackUsername())){
+                    NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is now in check.",gameData.whiteUsername()));
                     connections.broadcastAll(command.getGameID(), notification);
                 }
             }
+            dbGameDAO.updateGame(new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), chessGame));
         } catch (DataAccessException ex){
             ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, String.format("Error: You are unauthorized or an invalid game ID. here is message: %s",ex.getMessage()));
             Connection connection = new Connection(command.getAuthString(),session);
             connection.send(serverMessage);
-
         } catch (InvalidMoveException e) {
             ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
             connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
@@ -223,19 +232,21 @@ public class WebSocketHandler {
         try {
             var username = dbAuthDAO.getUsername(command.getAuthString());
             GameData game = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
-            if (!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.whiteUsername()) ||!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.blackUsername())){
+            if (!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.whiteUsername()) && !Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.blackUsername())){
                 ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: You cannot resign as an observer");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), errorMessage);
                 return;
             }
+            ChessGame chessGame = game.game();
             var message = String.format("%s resigned", username);
+            chessGame.gameOver();
+            dbGameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame));
             var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcastAll(command.getGameID(), serverMessage);
             connections.removeGame(command.getGameID());
         } catch (DataAccessException ex){
             ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: Unable to get game from server.");
-            Connection connection = new Connection(command.getAuthString(),session);
-            connection.send(serverMessage);
+            connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
         }
     }
 }

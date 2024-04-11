@@ -124,7 +124,7 @@ public class GameplayUI implements NotificationHandler {
         ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
         ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
         ChessMove move = new ChessMove(startPosition, endPosition, null); // how do I know what the promotion piece will be? do I check where they are?
-        ws.makeMove(authToken, gameID, move);
+        ws.makeMove(authToken, gameID, playerColor, move);
         return "";
     }
     public String resign() throws Exception {

@@ -39,9 +39,9 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, ChessMove move) {
+    public void makeMove(String authToken, Integer gameID, ChessGame.TeamColor playerColor, ChessMove move) {
         try{
-            var moveCommand = new MakeMoveCommand(authToken, gameID, move);
+            var moveCommand = new MakeMoveCommand(authToken, gameID, playerColor,move);
             this.send(new Gson().toJson(moveCommand));
         }catch (Exception ex){
             System.out.println("Error: Unable to make connection to server");
