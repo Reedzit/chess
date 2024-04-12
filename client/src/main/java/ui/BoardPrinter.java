@@ -14,11 +14,16 @@ public class BoardPrinter {
     }
 
     public StringBuilder printWhiteSide(ChessGame game){
+        int row = 0;
+        int col = 0;
         var board = game.getBoard();
         StringBuilder boardString = new StringBuilder();
         boolean isWhite = true;
         for (int i = 1; i < 9; i++) {
+            row++;col++;
+
             boardString.append(EscapeSequences.RESET_BG_COLOR);
+            boardString.append(String.valueOf(row));
             boardString.append(EscapeSequences.EMPTY);
             boardString.append("\n");
             for (int j = 1; j < 9; j++) {

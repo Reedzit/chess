@@ -134,13 +134,9 @@ public class WebSocketHandler {
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
         }
         catch (DataAccessException ex){
-//            if (ex.getClass() == InvalidGameIDException.class){
             ErrorMessage serverMessage = new ErrorMessage( ServerMessage.ServerMessageType.ERROR,String.format("Error: %s", ex.getMessage()));
             Connection connection = new Connection(command.getAuthString(),session);
             connection.send(serverMessage);
-//            }else{
-//                System.out.printf("Error: %s", ex.getMessage());
-//            }
         }
     }
     private void makeMove(MakeMoveCommand command, Session session) {
@@ -150,7 +146,7 @@ public class WebSocketHandler {
             GameData gameData = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
             if (Objects.equals(gameData.whiteUsername(), username)){
                 playerColor = ChessGame.TeamColor.WHITE;
-            }else if (gameData.blackUsername() == username){
+            }else if (Objects.equals(gameData.blackUsername(), username)){
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             ChessGame chessGame = gameData.game();

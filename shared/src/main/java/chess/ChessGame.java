@@ -91,16 +91,10 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException{
-//        if (gameOver){
-//            throw new GameOverException("Error: this game has ended");
-//        }
         if (getBoard().getPiece(move.getStartPosition()).getTeamColor()== this.getTeamTurn() && validMoves(move.getStartPosition()).contains(move)){
             ChessPiece startPiece = getBoard().getPiece(move.getStartPosition());
             if (this.getBoard().getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null){     //logic for promotion piece
-                if (this.getBoard().getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE && move.getEndPosition().getRow() == 8){
-                    this.getBoard().addPiece(move.getEndPosition(), new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece()));
-                    this.getBoard().addPiece(move.getStartPosition(), null);
-                }else if (this.getBoard().getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK && move.getEndPosition().getRow() == 1){
+                if ((this.getBoard().getPiece(move.getStartPosition()).getTeamColor() == TeamColor.WHITE && move.getEndPosition().getRow() == 8)    ||   (this.getBoard().getPiece(move.getStartPosition()).getTeamColor() == TeamColor.BLACK && move.getEndPosition().getRow() == 1)){
                     this.getBoard().addPiece(move.getEndPosition(), new ChessPiece(startPiece.getTeamColor(), move.getPromotionPiece()));
                     this.getBoard().addPiece(move.getStartPosition(), null);
                 }
