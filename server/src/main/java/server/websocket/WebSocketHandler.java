@@ -87,16 +87,16 @@ public class WebSocketHandler {
                 return;
             }
             if (command.getPlayerColor() == ChessGame.TeamColor.BLACK) {
-                if (gameData.blackUsername() == null || gameData.blackUsername().equals(username)) {
-                    serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s has joined the game on team BLACK", username));
-                } else {
+                if (gameData.blackUsername() == null || !gameData.blackUsername().equals(username)) {
                     serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: Black team is already taken");
+                } else {
+                    serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s has joined the game on team BLACK", username));
                 }
             } else {
-                if (gameData.whiteUsername() == null || gameData.whiteUsername().equals(username)) {
-                    serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s has joined the game on team WHITE", username));
-                } else {
+                if (gameData.whiteUsername() == null || !gameData.whiteUsername().equals(username)) {
                     serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: White team is already taken");
+                } else {
+                    serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s has joined the game on team WHITE", username));
                 }
             }
             connections.add(command.getGameID(), command.getAuthString(), session);
