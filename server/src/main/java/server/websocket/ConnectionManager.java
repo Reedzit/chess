@@ -20,13 +20,9 @@ public class ConnectionManager {
             list.add(connection);
         }
     }
-    public void removeGame(Integer gameID) {
-        connections.remove(gameID);
-    }
     public void removePlayer(Integer gameID, String authToken, Session session) {
         var list = connections.get(gameID);
         list.removeIf(connection -> connection.getAuthToken().equals(authToken));
-
     }
     public void broadcast(Integer gameID, String excludeAuthToken, ServerMessage msg)  {
         var removeList = new ArrayList<Connection>();

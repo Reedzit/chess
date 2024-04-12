@@ -40,7 +40,6 @@ public class GameplayUI implements NotificationHandler {
             case NOTIFICATION -> { NotificationMessage notification = new Gson().fromJson(message, NotificationMessage.class);
                 broadcast(notification);
             }
-
         }
     }
 
@@ -105,9 +104,9 @@ public class GameplayUI implements NotificationHandler {
         if (playerColor == null) {
             return boardPrinter.printChessboard(currentGame);
         }else if (playerColor == ChessGame.TeamColor.BLACK){
-            return boardPrinter.printBlackSide(currentGame).toString();
+            return boardPrinter.printSide(currentGame, false).toString();
         }else {
-            return boardPrinter.printWhiteSide(currentGame).toString();
+            return boardPrinter.printSide(currentGame, true).toString();
         }
     }
     public String leaveGame() throws Exception {
@@ -147,15 +146,15 @@ public class GameplayUI implements NotificationHandler {
             return "Please enter in: showMoves <row> <column>";
         }
         ChessPosition position = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
-        return boardPrinter.printValidMoves(currentGame, playerColor, position);
+//        return boardPrinter.printValidMoves(currentGame, position);
+        return null;
     }
     public void loadGame(LoadGameMessage msg) {
         this.currentGame = msg.getGame();
-//        System.out.println("Game has been loaded");
         if (playerColor == ChessGame.TeamColor.BLACK){
-            boardPrinter.printBlackSide(currentGame);
+            System.out.println(boardPrinter.printSide(currentGame, false));
         }else if (playerColor == ChessGame.TeamColor.WHITE) {
-            System.out.println(boardPrinter.printWhiteSide(currentGame));
+            System.out.println(boardPrinter.printSide(currentGame, true));
         }else {
             boardPrinter.printChessboard(currentGame);
         }
