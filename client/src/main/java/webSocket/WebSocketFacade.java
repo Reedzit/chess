@@ -38,7 +38,7 @@ public class WebSocketFacade extends Endpoint{
         }
     }
 
-    public void makeMove(String authToken, Integer gameID, ChessGame.TeamColor playerColor, ChessMove move) {
+    public void makeMove(String authToken, Integer gameID, ChessMove move) {
         try{
             var moveCommand = new MakeMoveCommand(authToken, gameID,move);
             this.send(new Gson().toJson(moveCommand));

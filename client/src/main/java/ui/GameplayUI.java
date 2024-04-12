@@ -13,6 +13,7 @@ import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Scanner;
 
 public class GameplayUI implements NotificationHandler {
@@ -20,11 +21,11 @@ public class GameplayUI implements NotificationHandler {
     ChessGame currentGame;
     ChessGame.TeamColor playerColor;
     String authToken;
-    WebSocketFacade ws;
+    WebSocketFacade ws = new WebSocketFacade(Repl.serverUrl, this);
     BoardPrinter boardPrinter;
 
     public GameplayUI(String serverUrl) throws ResponseException {
-        ws = new WebSocketFacade(serverUrl, this);
+
         boardPrinter = new BoardPrinter();
     }
     @Override
@@ -63,7 +64,7 @@ public class GameplayUI implements NotificationHandler {
                 case "leave" -> leaveGame();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                case "showMoves" -> showMoves(params);
+                case "showmoves" -> showMoves(params);
                 default -> printHelp();
             };
         }catch (Exception e) {
@@ -104,9 +105,9 @@ public class GameplayUI implements NotificationHandler {
         if (playerColor == null) {
             return boardPrinter.printChessboard(currentGame);
         }else if (playerColor == ChessGame.TeamColor.BLACK){
-            return boardPrinter.printSide(currentGame, false).toString();
+            return boardPrinter.printSide(currentGame, true, null).toString();
         }else {
-            return boardPrinter.printSide(currentGame, true).toString();
+            return boardPrinter.printSide(currentGame, false, null).toString();
         }
     }
     public String leaveGame() throws Exception {
@@ -115,18 +116,54 @@ public class GameplayUI implements NotificationHandler {
         return "You have left the game";
     }
     public String makeMove(String[] params) {
-        if (params.length != 4){
-            return "Please enter you move as <startRow> <startColumn> <endRow> <endColumn>";
-        }else if (playerColor == null){
+        if (params.length != 4) {
+            return "Please enter your move as <startRow> <startColumn> <endRow> <endColumn>";
+        } else if (playerColor == null) {
             return "Cannot make move as an observer.";
         }
-        ChessPosition startPosition = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
-        ChessPosition endPosition = new ChessPosition(Integer.parseInt(params[2]), Integer.parseInt(params[3]));
-        ChessMove move = new ChessMove(startPosition, endPosition, null); // how do I know what the promotion piece will be? do I check where they are?
-        ws.makeMove(authToken, gameID, playerColor, move);
+
+        // Helper method to convert column letter to 1-based integer string
+        String startColumnStr = letterToColumn(params[1]);
+        ChessMove move = getChessMove(params, startColumnStr);
+
+        // Assuming ws.makeMove(authToken, gameID, playerColor, move) is valid
+        ws.makeMove(authToken, gameID, move);
+
         return "";
     }
-    public String resign() throws Exception {
+
+    private ChessMove getChessMove(String[] params, String startColumnStr) {
+        String endColumnStr = letterToColumn(params[3]);
+
+        // Parse the integer values for rows
+        int startRow = Integer.parseInt(params[0]);
+        int endRow = Integer.parseInt(params[2]);
+
+        // Create ChessMove with converted positions
+        ChessPosition startPosition = new ChessPosition(startRow, Integer.parseInt(startColumnStr));
+        ChessPosition endPosition = new ChessPosition(endRow, Integer.parseInt(endColumnStr));
+        return new ChessMove(startPosition, endPosition, null);
+    }
+
+    // Helper method to convert column letter ('a' to 'h') to 1-based integer string ("1" to "8")
+    private String letterToColumn(String letter) {
+        return switch (letter) {
+            case "a" -> "1";
+            case "b" -> "2";
+            case "c" -> "3";
+            case "d" -> "4";
+            case "e" -> "5";
+            case "f" -> "6";
+            case "g" -> "7";
+            case "h" -> "8";
+            default -> "Invalid column letter. Use letters 'a' to 'h'.";
+        };
+    }
+
+    public String resign() {
+        if(currentGame.gameOver){
+            return "This game is already over.";
+        }
         System.out.println("\nAre you sure you want to resign? (yes/no)\n");
         Scanner scanner = new Scanner(System.in);
         String line = "";
@@ -137,7 +174,6 @@ public class GameplayUI implements NotificationHandler {
             }
         }//delete game
         ws.resign(authToken, gameID);
-        Repl.state = Repl.State.SIGNEDIN;
         return "You have resigned from the game.";
     }
 
@@ -145,21 +181,27 @@ public class GameplayUI implements NotificationHandler {
         if (params.length != 2){
             return "Please enter in: showMoves <row> <column>";
         }
-        ChessPosition position = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
-//        return boardPrinter.printValidMoves(currentGame, position);
-        return null;
+        ChessPosition position = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(letterToColumn(params[1])));
+        Collection<ChessMove> validMoves = currentGame.validMoves(position);
+        if (currentGame.getBoard().getPiece(position).getTeamColor() == ChessGame.TeamColor.WHITE) {
+            return boardPrinter.printSide(currentGame, false, validMoves).toString();
+        }else {
+            return boardPrinter.printSide(currentGame, true, validMoves).toString();
+        }
+//        return null;
     }
     public void loadGame(LoadGameMessage msg) {
         this.currentGame = msg.getGame();
         if (playerColor == ChessGame.TeamColor.BLACK){
-            System.out.println(boardPrinter.printSide(currentGame, false));
+            System.out.println(boardPrinter.printSide(currentGame, true, null));
         }else if (playerColor == ChessGame.TeamColor.WHITE) {
-            System.out.println(boardPrinter.printSide(currentGame, true));
+            System.out.println(boardPrinter.printSide(currentGame, false, null));
         }else {
             boardPrinter.printChessboard(currentGame);
         }
     }
     public void broadcast(NotificationMessage msg){
+        redrawBoard();
         System.out.println(msg.getMessage());
     }
 

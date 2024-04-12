@@ -12,7 +12,7 @@ import java.util.Objects;
  */
 public class ChessGame {
         public boolean gameOver;
-        TeamColor currentTurn;
+        public TeamColor currentTurn;
         ChessBoard currentBoard;
     public ChessGame() {
         setTeamTurn(TeamColor.WHITE);

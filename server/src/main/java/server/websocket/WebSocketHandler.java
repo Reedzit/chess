@@ -168,7 +168,7 @@ public class WebSocketHandler {
                 return;
             }
             if(!chessGame.validMoves(command.getMove().getStartPosition()).contains(new ChessMove( command.getMove().getStartPosition(), command.getMove().getEndPosition(), null))){
-                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
+                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: is this is an invalid move. Please enter a valid move.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
                 return;
             }
@@ -178,20 +178,20 @@ public class WebSocketHandler {
             connections.broadcastAll(command.getGameID(), loadGameMessage);
             var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcast(command.getGameID(), command.getAuthString(), serverMessage);
-            if (gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)){
-               NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in stalemate. White team wins!");
+            if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
+               NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in checkmate. White team wins!");
                connections.broadcastAll(command.getGameID(), notification);
                chessGame.gameOver();
-            }else if (gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
-                NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "White is in stalemate. Black team wins!");
-                connections.broadcastAll(command.getGameID(), notification);
-                chessGame.gameOver();
             }else if (gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
                 NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "White is in checkmate. Black team wins!");
                 connections.broadcastAll(command.getGameID(), notification);
                 chessGame.gameOver();
-            }else if (gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
-                NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in checkmate. White team wins!");
+            }else if (gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
+                NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate.");
+                connections.broadcastAll(command.getGameID(), notification);
+                chessGame.gameOver();
+            }else if (gameData.game().isInStalemate(ChessGame.TeamColor.BLACK)){
+                NotificationMessage notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate.");
                 connections.broadcastAll(command.getGameID(), notification);
                 chessGame.gameOver();
             }else if (gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){

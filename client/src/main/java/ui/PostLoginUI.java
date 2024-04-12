@@ -74,13 +74,13 @@ public class PostLoginUI {
         //call websocket facade join game
         Repl.gameplayUI.gameID = Integer.parseInt(params[0]);
         Repl.gameplayUI.authToken = server.authToken;
-        if (Objects.equals(params[1], "WHITE")) {
+        if (Objects.equals(params[1], "white")) {
             Repl.gameplayUI.playerColor = ChessGame.TeamColor.WHITE;
         }else {
             Repl.gameplayUI.playerColor = ChessGame.TeamColor.BLACK;
         }
         Repl.gameplayUI.joinPlayer();
-        return String.format("You have joined the game %s. \n", params[0]);
+        return String.format("You have joined game %s. \n", params[0]);
     }
     public String observeGame(String... params) throws ResponseException {
         if (params.length != 1){
@@ -92,8 +92,8 @@ public class PostLoginUI {
         Repl.gameplayUI.authToken = server.authToken;
         Repl.gameplayUI.playerColor = null;
         Repl.gameplayUI.joinObserver();
-        BoardPrinter.main(new String[]{});
-        return String.format("You are observing the game %s. \n", Integer.parseInt(params[0]));
+        Repl.gameplayUI.redrawBoard();
+        return String.format("You are observing game %s. \n", Integer.parseInt(params[0]));
     }
     public String logout() throws ResponseException {
         Repl.state = Repl.State.SIGNEDOUT;
