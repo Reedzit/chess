@@ -234,6 +234,11 @@ public class WebSocketHandler {
         try {
             var username = dbAuthDAO.getUsername(command.getAuthString());
             GameData game = dbGameDAO.getGame(dbGameDAO.getGameName(command.getGameID()));
+            if (game.game().gameOver){
+                ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This game is already over");
+                connections.broadcastToOne(command.getGameID(), command.getAuthString(), errorMessage);
+                return;
+            }
             if (!Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.whiteUsername()) && !Objects.equals(dbAuthDAO.getUsername(command.getAuthString()), game.blackUsername())){
                 ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: You cannot resign as an observer");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), errorMessage);

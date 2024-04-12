@@ -64,7 +64,7 @@ public class GameplayUI implements NotificationHandler {
                 case "leave" -> leaveGame();
                 case "move" -> makeMove(params);
                 case "resign" -> resign();
-                case "showMoves" -> showMoves();
+                case "showMoves" -> showMoves(params);
                 default -> printHelp();
             };
         }catch (Exception e) {
@@ -142,12 +142,23 @@ public class GameplayUI implements NotificationHandler {
         return "You have resigned from the game.";
     }
 
-    public String showMoves(){
-        return "";
+    public String showMoves(String[] params){
+        if (params.length != 2){
+            return "Please enter in: showMoves <row> <column>";
+        }
+        ChessPosition position = new ChessPosition(Integer.parseInt(params[0]), Integer.parseInt(params[1]));
+        return boardPrinter.printValidMoves(currentGame, playerColor, position);
     }
     public void loadGame(LoadGameMessage msg) {
         this.currentGame = msg.getGame();
-        System.out.println("Game has been loaded");
+//        System.out.println("Game has been loaded");
+        if (playerColor == ChessGame.TeamColor.BLACK){
+            boardPrinter.printBlackSide(currentGame);
+        }else if (playerColor == ChessGame.TeamColor.WHITE) {
+            System.out.println(boardPrinter.printWhiteSide(currentGame));
+        }else {
+            boardPrinter.printChessboard(currentGame);
+        }
     }
     public void broadcast(NotificationMessage msg){
         System.out.println(msg.getMessage());
