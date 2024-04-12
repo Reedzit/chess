@@ -1,11 +1,15 @@
 package dataAccess;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class DbAuthDAO implements AuthDAO{
-    String initStatement = """
-            CREATE TABLE IF NOT EXISTS  AuthData (
+public class DbAuthDAO implements AuthDAO {
+
+    private static final String CREATE_TABLE_SQL = """
+            CREATE TABLE IF NOT EXISTS AuthData (
               `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `token` varchar(256) NOT NULL,
@@ -14,93 +18,77 @@ public class DbAuthDAO implements AuthDAO{
               INDEX(token)
             )
             """;
+
     public DbAuthDAO() throws DataAccessException {
         configTable();
     }
+
     @Override
     public String createAuth(String username) throws DataAccessException {
         String authToken = UUID.randomUUID().toString();
-        String updateStatement = "INSERT INTO AuthData (username, token) VALUES(?, ?);";
-        try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.prepareStatement(updateStatement)) {
-                statement.setString(1, username);
-                statement.setString(2, authToken);
-                statement.executeUpdate();
-                statement.close();
-                return authToken;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
-        }
+        String insertStatement = "INSERT INTO AuthData (username, token) VALUES (?, ?)";
+        executeUpdate(insertStatement, username, authToken);
+        return authToken;
     }
 
     @Override
     public String getAuth(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM AuthData WHERE token = '%s'", token);
-        try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.createStatement()){
-                var result = statement.executeQuery(selectStatement);
-                if (result.next()){
-                    result.close();
-                    statement.close();
-                    return token;
-                }
-                return null;
+        String selectStatement = "SELECT * FROM AuthData WHERE token = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(selectStatement)) {
+            statement.setString(1, token);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return token;
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     @Override
     public String getUsername(String token) throws DataAccessException {
-        var selectStatement = String.format("SELECT * FROM AuthData WHERE token = '%s'", token);
-        try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.createStatement()){
-                var result = statement.executeQuery(selectStatement);
-                if (result.next()){
-                    String username = result.getString(2);
-                    result.close();
-                    statement.close();
-                    return username;
-                }
-                return null;
+        String selectStatement = "SELECT username FROM AuthData WHERE token = ?";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(selectStatement)) {
+            statement.setString(1, token);
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                return result.getString("username");
             }
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
+        return null;
     }
 
     @Override
     public void deleteAuth(String token) throws DataAccessException {
-        String deleteStatement = String.format("DELETE FROM AuthData WHERE token = '%s'", token);
-        try (var conn = DatabaseManager.getConnection()){
-            try ( var statement = conn.createStatement()){
-                statement.executeUpdate(deleteStatement);
-            }
-        }catch (SQLException e){
-            throw new DataAccessException(e.getMessage());
-        }
+        String deleteStatement = "DELETE FROM AuthData WHERE token = ?";
+        executeUpdate(deleteStatement, token);
     }
 
-    void configTable() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()){
-            try (var preparedStatement = conn.prepareStatement(initStatement)){
-                preparedStatement.executeUpdate();
-            }
-        }catch (SQLException ex){
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
     @Override
-    public void clear() throws DataAccessException{
-        String deleteStatement = "TRUNCATE TABLE AuthData;";
-        try (var conn = DatabaseManager.getConnection()){
-            try (var statement = conn.createStatement()){
-                statement.executeUpdate(deleteStatement);
+    public void clear() throws DataAccessException {
+        String truncateStatement = "TRUNCATE TABLE AuthData";
+        executeUpdate(truncateStatement);
+    }
+
+    private void configTable() throws DataAccessException {
+        DatabaseManager.createDatabase();
+        executeUpdate(CREATE_TABLE_SQL);
+    }
+
+    private void executeUpdate(String sql, Object... params) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            int index = 1;
+            for (Object param : params) {
+                statement.setObject(index++, param);
             }
-        }catch (SQLException e){
+            statement.executeUpdate();
+        } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
         }
     }
