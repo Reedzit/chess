@@ -64,9 +64,16 @@ public class WebSocketHandler {
                         resign(resignCommand, session);
                     }
                 }
+            } else {
+                JoinPlayerCommand joinCommand = new Gson().fromJson(message, JoinPlayerCommand.class);
+                connections.add(joinCommand.getGameID(), joinCommand.getAuthString(), session);
+                ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized");
+                connections.broadcastToOne(joinCommand.getGameID(), joinCommand.getAuthString(), errorMessage);
             }
         } catch (DataAccessException ex) {
-            System.out.println(ex.getMessage());
+            JoinPlayerCommand joinCommand = new Gson().fromJson(message, JoinPlayerCommand.class);
+            ErrorMessage errorMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: unauthorized");
+            connections.broadcastToOne(joinCommand.getGameID(), joinCommand.getAuthString(), errorMessage);
         }
     }
     private void joinPlayer(JoinPlayerCommand command, Session session) {
@@ -150,6 +157,11 @@ public class WebSocketHandler {
                 playerColor = ChessGame.TeamColor.BLACK;
             }
             ChessGame chessGame = gameData.game();
+            if (gameData.game().gameOver){
+                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This game is over.");
+                connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
+                return;
+            }
             if (chessGame.getBoard().getPiece(command.getMove().getStartPosition()).getTeamColor() != playerColor){
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
@@ -159,10 +171,6 @@ public class WebSocketHandler {
                 ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This is an invalid move. Please enter a valid move.");
                 connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
                 return;
-            }
-            if (gameData.game().gameOver){
-                ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: This game is over.");
-                connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
             }
             chessGame.makeMove(command.getMove());
             var message = String.format("%s made a move", username);
@@ -246,7 +254,6 @@ public class WebSocketHandler {
             dbGameDAO.updateGame(new GameData(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGame));
             var serverMessage = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.broadcastAll(command.getGameID(), serverMessage);
-            connections.removeGame(command.getGameID());
         } catch (DataAccessException ex){
             ErrorMessage serverMessage = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: Unable to get game from server.");
             connections.broadcastToOne(command.getGameID(), command.getAuthString(), serverMessage);
